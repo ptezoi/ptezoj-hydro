@@ -1,0 +1,71 @@
+<meta charset="UTF-8">
+<style>
+  body {
+    font-family: "Open Sans", "Seravek", "Segoe UI", "Verdana", "PingFang SC", "Hiragino Sans GB", "Lantinghei SC", "Microsoft Yahei", "WenQuanYi Micro Hei", "sans";
+    font-size: 14px;
+  }
+  table {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    font-size: inherit;
+  }
+  th, td {
+    text-align: left;
+    border: 1px solid #CCC;
+    padding: 5px;
+  }
+  thead tr {
+    background: #5f9fd6;
+    color: #FFF;
+  }
+  tbody tr:nth-child(even) {
+    background: #F0F0F0;
+  }
+</style>
+<h2>{{ tdoc.title }}</h2>
+Exported from <a href="{{ model.system.get('server.url') }}">{{ model.system.get('server.url') }}</a>
+<table>
+  <thead>
+    <tr>
+    {%- for column in rows[0] -%}
+      <th class="col--{{ column['type'] }}">
+        {% if column.type == 'problem_detail' %}
+          <a href="{{ model.system.get('server.url') }}{{ url(type + '_detail_problem', tid=tdoc.docId, pid=column.raw).substr(1,9999) }}">{{ column.value }}</a>
+        {% else %}
+          {{ column.value }}
+        {% endif %}
+      </th>
+    {%- endfor -%}
+    </tr>
+  </thead>
+  <tbody>
+  {%- for row in rows -%}{% if loop.index0 %}
+    <tr>
+      {%- for column in row -%}
+        <td>
+          {% if column.type == 'record' and column.raw %}
+            <a href="{{ model.system.get('server.url') }}{{ url('record_detail', rid=column.raw).substr(1,9999) }}">
+              <span style="font-weight:bold;color:{{ utils.status.getScoreColor(column.score|default(column.value)) }}">{{ column.value|string|nl2br|safe }}</span>
+            </a>
+          {% elif column.type == 'records' %}
+            {%- for record in column.raw -%}
+              {% if loop.index0 %}/{% endif %}
+              {% if record.raw %}
+                <a href="{{ model.system.get('server.url') }}{{ url('record_detail', rid=record.raw).substr(1,9999) }}">
+                  <span style="font-weight:bold;color:{{ utils.status.getScoreColor(record.score|default(record.value)) }}">{{ record.value|string|nl2br|safe }}</span>
+                </a>
+              {% else %}
+                {{ record.value|string|nl2br|safe }}
+              {% endif %}
+            {%- endfor -%}
+          {% else %}
+            {{ column.value|string|nl2br|safe }}
+          {% endif %}
+        </td>
+      {%- endfor -%}
+    </tr>
+  {% endif %}{%- endfor -%}
+  </tbody>
+</table>

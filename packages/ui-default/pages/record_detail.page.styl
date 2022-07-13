@@ -1,0 +1,30 @@
+.page--record_detail
+
+  .compiler-text
+    padding: rem(20px 0)
+    font-size: rem($font-size-small)
+    &:empty
+      display: none
+
+  .col--case
+    width: rem(70px)
+
+  .col--memory, .col--time
+    width: rem(120px)
+
+  .col--case, .col--status
+    border-right: 1px solid $table-border-color
+  
+  .subtask
+    background-color: #fff !important
+    height: rem(30px)
+    td
+      padding-top: 0 
+      padding-bottom: 0 
+
+  +mobile()
+    .col--time
+      width: rem(70px)
+
+    .col--memory
+      width: rem(100px)

@@ -1,0 +1,93 @@
+<form method="post">
+{%- for family, family_settings in settings|groupby('family') -%}{%- if family != 'setting_storage' %}
+  <div class="section__header">
+    <h1 class="section__title" id="{{ family }}" data-heading>{{ _(family) }}</h1>
+  </div>
+  <div class="section__body">
+  {%- for setting in family_settings -%}
+  {% if not setting.flag|bitand(model.setting.FLAG_HIDDEN) %}
+  {% set secret = setting.flag|bitand(model.setting.FLAG_SECRET) != 0 %}
+  {% if setting.type == 'text' or setting.type == 'password' or setting.type == 'number' or setting.type == 'float' %}
+    {% set isFileConfig = (setting.name === 'file.accessKey' or setting.name === 'file.secretKey') and process.env.MINIO_ACCESS_KEY %}
+    {{ form.form_text({
+          type:setting.type,
+          label:setting.name,
+          help_text:setting.desc,
+          name:setting.key,
+          value:'' if (secret or isFileConfig) else (current[setting.key]|default(setting.value)),
+          disabled:setting.disabled,
+          placeholder:'Please edit in ~/.hydro/env instead' if isFileConfig else (_('(Not changed)') if secret else '')
+        }) }}
+  {% elif setting.type == 'select' %}
+    {{ form.form_select({
+          options:setting.range,
+          label:setting.name,
+          help_text:setting.desc,
+          name:setting.key,
+          value:current[setting.key] or setting.value,
+          disabled:setting.disabled
+        }) }}
+  {% elif setting.type == 'radio' %}
+    {{ form.form_radio({
+          options:setting.range,
+          label:setting.name,
+          help_text:setting.desc,
+          name:setting.key,
+          value:current[setting.key] or setting.value,
+          disabled:setting.disabled
+        }) }}
+  {% elif setting.type == 'image_radio' %}
+    {{ form.form_image_radio({
+          options:setting.range,
+          image_class:setting.image_class,
+          label:setting.name,
+          help_text:setting.desc,
+          name:setting.key,
+          value:current[setting.key] or setting.value,
+          disabled:setting.disabled
+        }) }}
+  {% elif setting.type == 'textarea' %}
+    {{ form.form_textarea({
+          label:setting.name,
+          help_text:setting.desc,
+          name:setting.key,
+          value:'' if secret else (current[setting.key]|default(setting.value)),
+          disabled:setting.disabled,
+          placeholder:_('(Not changed)') if secret else '',
+          extra_attr: 'data-yaml' if setting.subType == 'yaml' else ''
+        }) }}
+  {% elif setting.type == 'markdown' %}
+    {{ form.form_textarea({
+          label:setting.name,
+          help_text:setting.desc,
+          name:setting.key,
+          value:'' if secret else (current[setting.key]|default(setting.value)),
+          markdown:true,
+          disabled:setting.disabled,
+          placeholder:_('(Not changed)') if secret else ''
+        }) }}
+  {% elif setting.type == 'boolean' %}
+    {% set _val = current[setting.key] %}
+    {{ form.form_checkbox({
+          label:setting.name,
+          help_text:setting.desc,
+          name:setting.key,
+          value:setting.value if (_val === undefined or _val === null) else _val,
+          disabled:setting.disabled
+    })}}
+    {{ form.form_checkbox({
+          label:setting.name,
+          name:'booleanKeys.' + setting.key,
+          value:true,
+          extra_class:'display-hidden'
+    })}}
+  {% endif %}
+  {% endif %}
+  {%- endfor -%}
+  </div>
+{%- endif -%}{%- endfor -%}
+  <div class="section__body">
+    <input type="hidden" name="csrfToken" value="{{ handler.csrfToken }}">
+    <input type="submit" class="rounded primary button" value="{{ _('Save All Changes') }}">
+  </div>
+</form>

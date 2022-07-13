@@ -1,0 +1,56 @@
+import { findFileSync, parseMemoryMB, parseTimeMS } from './utils';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default async function readYamlCases(cfg: Record<string, any> = {}, checkFile = (s: string, errMsg: string) => s) {
+    const config: any = {
+        checker_type: cfg.checker_type || 'default',
+        judge_extra_files: [],
+        user_extra_files: [],
+    };
+    if (cfg.type === 'objective') {
+        if (cfg.checker || cfg.interactor) throw new Error('You cannot use checker or interactor for objective questions');
+    } else {
+        if (cfg.checker) {
+            if (!cfg.checker.includes('.')) {
+                config.checker = findFileSync(`@hydrooj/hydrojudge/vendor/testlib/checkers/${cfg.checker}.cpp`, false);
+            }
+            if (!config.checker) config.checker = checkFile(cfg.checker, 'Cannot find checker {0}.');
+        }
+        if (cfg.interactor) config.interactor = checkFile(cfg.interactor, 'Cannot find interactor {0}.');
+        ['judge', 'user'].forEach((n) => {
+            const conf = cfg[`${n}_extra_files`];
+            if (!conf) return;
+            if (conf instanceof Array) {
+                config[`${n}_extra_files`] = conf.map((file) => checkFile(file, `Cannot find ${n} extra file {0}.`));
+            } else throw new Error(`Invalid ${n}_extra_files config.`);
+        });
+    }
+    if (cfg.cases?.length) {
+        config.subtasks = [{
+            cases: cfg.cases,
+            type: 'sum',
+        }];
+    }
+    if (cfg.time) config.time = parseTimeMS(cfg.time);
+    if (cfg.memory) config.memory = parseMemoryMB(cfg.memory);
+    return Object.assign(cfg, config);
+}
+
+export function convertIniConfig(ini: string) {
+    const f = ini.split('\n');
+    const count = parseInt(f[0], 10);
+    const res = { subtasks: [] };
+    for (let i = 1; i <= count; i++) {
+        if (!f[i] || !f[i].trim()) throw new Error('Testcada count incorrect.');
+        const [input, output, time, score, memory] = f[i].split('|');
+        const cur = {
+            cases: [{ input: `input/${input.toLowerCase()}`, output: `output/${output.toLowerCase()}` }],
+            score: parseInt(score, 10),
+            time: `${time}s`,
+            memory: '256m',
+        };
+        if (!Number.isNaN(parseInt(memory, 10))) cur.memory = `${Math.floor(parseInt(memory, 10) / 1024)}m`;
+        res.subtasks.push(cur);
+    }
+    return res;
+}

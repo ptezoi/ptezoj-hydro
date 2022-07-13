@@ -1,0 +1,84 @@
+{% import "components/form.html" as form with context %}
+{% import "components/sidemenu.html" as sidemenu with context %}
+{% import "components/paginator.html" as paginator with context %}
+{% import "components/nothing.html" as nothing with context %}
+{% import "components/noscript_note.html" as noscript_note with context %}
+{% import "components/user.html" as user with context %}
+<!DOCTYPE html>
+<html data-page="{{ page_name }}" data-layout="{{ layout_name }}" class="layout--{{ layout_name }} page--{{ page_name }} theme--{{ (handler.user|default({})).theme|default('default') }} nojs" lang="{{ handler.viewLang }}" data-app="Hydro">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ static_url('apple-touch-icon-180x180.png') }}">
+  <link rel="icon" type="image/png" href="{{ static_url('favicon-32x32.png') }}" sizes="32x32">
+  <link rel="icon" type="image/png" href="{{ static_url('android-chrome-192x192.png') }}" sizes="192x192">
+  <link rel="icon" type="image/png" href="{{ static_url('favicon-96x96.png') }}" sizes="96x96">
+  <link rel="icon" type="image/png" href="{{ static_url('favicon-16x16.png') }}" sizes="16x16">
+  <meta name="theme-color" content="#56758f">
+  {% block ogp %}
+  <meta property="og:site_name" content="{{ (handler.domain|default({ui:[]})).ui.name|default(model.system.get('server.name')) }}" />
+  <meta property="og:title" content="{{ handler.renderTitle(page_name) }}" />
+  <meta property="og:url" content="{{ model.system.get('server.url') }}{{ handler.ctx.request.path.slice(1) }}" />
+  <meta property="og:image" content="{{ static_url('favicon-96x96.png') }}" />
+  {% endblock %}
+  <title>{{ handler.renderTitle(page_name) }}</title>
+  <style>
+    body {
+      --font-family: "{{ UserContext.fontFamily }}", "Open Sans", "Seravek", "Segoe UI", "Verdana", "PingFang SC", "Hiragino Sans GB", "Lantinghei SC", "Microsoft Yahei", "WenQuanYi Micro Hei", "sans";
+      --code-font-family: "{{ UserContext.codeFontFamily }}", "monaco", "Source Code Pro", "Consolas", "Lucida Console", "monospace";
+      --font-ligatures: {{ "normal" if UserContext.codeFontLigatures else "none" }} !important;
+    }
+  </style>
+  {% if process.env.DEV %}
+    <link rel="stylesheet" media="all" href="/default.theme.css">
+  {% else %}
+    <link rel="stylesheet" media="all" href="{{ static_url('default-' + global.Hydro.version['ui-default'] +'.theme.css') }}">
+  {% endif %}
+  {% if not isIE(handler.request.headers['user-agent']) %}
+    <script>
+      var _htmlNode = document.documentElement;
+      _htmlNode.className = _htmlNode.className.replace(' nojs', ' hasjs');
+      try {
+        import('data:text/javascript,');Object.fromEntries([]);window.matchMedia('all').addEventListener('change',()=>{});
+      } catch(e) {
+        const s = document.createElement('script');
+        s.async = false;
+        s.src = "{{ '/polyfill.js' if process.env.DEV else static_url('polyfill-' + global.Hydro.version['ui-default'] + '.js') }}";
+        document.head.appendChild(s);
+      }
+    </script>
+  {% endif %}
+</head>
+<body>
+  {% block body %}{% endblock %}
+  {% if not isIE(handler.request.headers['user-agent']) %}
+    <script>
+      var UiContext = '{{ UiContext|json|jsesc|safe }}';
+      var UserContext = '{{ UserContext|json|jsesc|safe }}';
+    </script>
+    <script type="text/javascript" src="{{ static_url('l/'+_('__id')) }}"></script>
+    {% if process.env.DEV and vite %}
+      <script type="module">
+        import RefreshRuntime from 'http://localhost:3000/@react-refresh'
+        RefreshRuntime.injectIntoGlobalHook(window)
+        window.$RefreshReg$ = () => {}
+        window.$RefreshSig$ = () => (type) => type
+        window.__vite_plugin_react_preamble_installed__ = true
+      </script>
+      <script type="module" src="http://localhost:3000/@vite/client"></script>
+      <script type="module" src="http://localhost:3000/entry.js"></script>
+    {% else %}
+      <script src="{{ static_url('default.theme.js') }}?version={{ global.Hydro.version['ui-default'] }}"></script>
+      {% if process.env.DEV %}
+        <script type="text/javascript" src="/hydro.js"></script>
+      {% else %}
+        <script type="text/javascript" src="{{ static_url('hydro-'+global.Hydro.version['ui-default']+'.js') }}"></script>
+      {% endif %}
+    {% endif %}
+  {% endif %}
+  {% block script %}{% endblock %}
+</body>
+</html>

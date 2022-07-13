@@ -1,0 +1,14 @@
+{% extends "layout/wiki_base.html" %}
+{% block wiki_content %}
+{% set name = handler.domain.ui.name|default(model.system.get('server.name')) %}
+{%- for section in sections -%}
+<div class="section" data-heading-extract-to="#menu-item-wiki_about">
+  <div class="section__header">
+    <h1 class="section__title" id="{{ section.id }}" data-heading>{{ section.title }}</h1>
+  </div>
+  <div class="section__body typo">
+    {{ section.content|markdown|safe }}
+  </div>
+</div>
+{%- endfor -%}
+{% endblock %}

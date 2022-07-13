@@ -1,0 +1,8 @@
+host:
+  value: ::1
+port:
+  type: number
+  value: 1491
+auth:
+  type: text
+  value: SecretPassword

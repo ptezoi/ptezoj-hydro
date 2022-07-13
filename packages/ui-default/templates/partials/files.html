@@ -1,0 +1,44 @@
+{% import "components/nothing.html" as nothing with context %}
+<div class="section__body no-padding files" data-fragment-id="files">
+  {% if files.length %}
+    <table class="data-table">
+      <colgroup>
+        <col class="col--checkbox">
+        <col class="col--name">
+        <col class="col--size">
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="col--checkbox">
+            <label class="compact checkbox">
+              <input type="checkbox" name="select_all" data-checkbox-toggle="files">
+            </label>
+          </th>
+          <th class="col--name">{{ _('Filename') }}</th>
+          <th class="col--size">{{ _('Size') }}</th>
+          <th class="col--operation"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {%- for file in files -%}
+        <tr data-filename="{{ file.name }}" data-size="{{ file.size }}">
+          <td class="col--checkbox">
+            <label class="compact checkbox">
+              <input type="checkbox" data-checkbox-group="files" data-checkbox-range>
+            </label>
+          </td>
+          <td class="col--name">
+            <a href="{{ urlForFile(file.name) }}">{{ file.name }}</a>
+          </td>
+          <td class="col--size">{{ size(file.size) }}</td>
+          <td class="col--operation">
+            <a href="{{ urlForFile(file.name) }}" class="icon icon-download"></a>
+          </td>
+        </tr>
+        {%- endfor -%}
+      </tbody>
+    </table>
+  {% else %}
+    {{ nothing.render('No file at current.') }}
+  {% endif %}
+</div>

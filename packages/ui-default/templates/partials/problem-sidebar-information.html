@@ -1,0 +1,25 @@
+{% import "components/record.html" as record with context %}
+{% import "components/problem.html" as problem with context %}
+{% import "components/user.html" as user with context %}
+<div class="section__body typo" data-fragment-id="problem-sidebar-information">
+  <dl class="large horizontal">
+    <dt>{{ _('ID') }}</dt>
+    <dd>{{ pdoc.docId }}</dd>
+    <dt>{{ _('Time') }}</dt>
+    <dd>{{ pdoc.config.timeMax if pdoc.config.timeMax == pdoc.config.timeMin else pdoc.config.timeMin+'~'+pdoc.config.timeMax  }}ms</dd>
+    <dt>{{ _('Memory') }}</dt>
+    <dd>{{ pdoc.config.memoryMax if pdoc.config.memoryMax == pdoc.config.memoryMin else pdoc.config.memoryMin+'~'+pdoc.config.memoryMax }}MiB</dd>
+    <dt>{{ _('Difficulty') }}</dt>
+    <dd>{{ pdoc['difficulty'] or lib.difficulty(pdoc.nSubmit, pdoc.nAccept) or _('(None)') }}</dd>
+    <dt>{{ _('Tags') }}</dt>
+    <dd>
+      {{ problem.render_problem_tags(pdoc, true) }}
+    </dd>
+    <dt>{{ _('# Submissions') }}</dt>
+    <dd><a href="{{ url('record_main', query={pid:pdoc.docId}) }}">{{ pdoc.nSubmit }}</a></dd>
+    <dt>{{ _('Accepted') }}</dt>
+    <dd>{{ pdoc.nAccept }}</dd>
+    <dt>{{ _('Uploaded By') }}</dt>
+    <dd>{{ user.render_inline(owner_udoc, badge=false) }}</dd>
+  </dl>
+</div>

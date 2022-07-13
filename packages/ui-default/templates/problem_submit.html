@@ -1,0 +1,59 @@
+{% extends "layout/basic.html" %}
+{% block content %}
+{{ set(UiContext, 'pdoc', pdoc) }}
+<div class="row">
+  <div class="medium-9 columns">
+    <div class="section">
+      <div class="section__header">
+        <h1 class="section__title">{{ _('Submit to Judge') }}</h1>
+      </div>
+      <div class="section__body">
+        <form method="post" enctype="multipart/form-data">
+          <div class="hasjs--hide">
+            {{ form.form_select({
+                label:'Code language',
+                options:model.setting.SETTINGS_BY_KEY['codeLang'].range,
+                name:'lang',
+                value:handler.user.codeLang
+              }) }}
+          </div>
+          <div class="row nojs--hide">
+            <div class="medium-5 columns form__item end" id="codelang-main-container">
+              <label>
+                {{ _('Code language') }}
+                <div name="form_item_lang" class="select-container">
+                  <select id="codelang-main-select" class="select"></select>
+                </div>
+              </label>
+            </div>
+            <div class="medium-5 columns form__item end" style="display: none" id="codelang-sub-container">
+              <label>
+                {{ _('Code language') }}
+                <div name="form_item_lang" class="select-container">
+                  <select id="codelang-sub-select" class="select"></select>
+                </div>
+              </label>
+            </div>
+          </div>
+          {{ form.form_textarea({label:'Code', columns:12, name:'code', extra_class:'monospace', autofocus:true}) }}
+          <div class="row">
+            <div class="medium-12 columns">
+              <p>{{ _('Or upload a file:') }} <input type="file" name="file"></p>
+              <br />
+            </div>
+          </div>
+          <div class="row"><div class="columns">
+            <input type="hidden" name="csrfToken" value="{{ handler.csrfToken }}">
+            <input type="submit" class="rounded primary button" value="{{ _('Submit') }}">
+          </div></div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="medium-3 columns">
+    {% set owner_udoc = udoc %}
+    {% include "partials/problem_sidebar.html" %}
+  </div>
+</div>
+
+{% endblock %}
