@@ -247,6 +247,7 @@ discussion_create: 创建公告
 discussion_edit: 编辑公告
 discussion_main: 公告
 discussion_node: 公告
+discussion_detail: 公告详情
 Discussion: 公告
 Discussions: 公告
 Display name {1} you want to set is used by others.: 您想要设置的显示名 {1} 已经被其他人使用了。
