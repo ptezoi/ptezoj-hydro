@@ -1,0 +1,51 @@
+.page--courses_main
+  .course-card
+    display: inline-block
+    padding: 15px 20px
+    padding-bottom: 0
+    width: 100%
+    border-style: solid
+    border-color: rgba(#AFC2C9, 0.4)
+    border-width: 1px
+    box-shadow: 0 2px 3px rgba(#AFC2C9, 0.4)
+    transition: transform .2s, box-shadow .5s
+
+  .course-card:hover
+    transform: scale(1.05) translateY(-5px)
+    box-shadow: 0 2px 8px rgba(#AFC2C9, 0.5)
+
+  .course-card .course-card-header
+    font-size: 12px
+
+  .course-card .course-card-header h1
+    overflow: hidden
+    text-overflow: ellipsis
+    white-space: nowrap
+    font-weight: normal
+
+  .course-card .course-card-body
+    font-size: 14px
+    margin-top: 10px
+
+  .course-card .course-card-body p
+    overflow: hidden
+    text-overflow: ellipsis
+    white-space: nowrap
+    padding: 5px 0 5px 0
+    line-height: 20px
+
+  +tablet()
+    .course-card .course-card-header
+      font-size: 10px
+    .course-card .course-card-body
+      font-size: 10px
+    .course-card .button
+      font-size: 4px
+
+  +mobile()
+    .course-card .course-card-header
+      font-size: 10px
+    .course-card .course-card-body
+      font-size: 10px
+    .course-card
+      box-shadow: none

@@ -1,0 +1,61 @@
+{% extends "layout/basic.html" %}
+{% import "components/nothing.html" as nothing with context %}
+{% block content %}
+    <div class="row">
+        <div class="medium-12 columns">
+            <div class="section">
+                <div class="section__header">
+                    <h1 class="section__title">课程</h1>
+                </div>
+                <div class="section__body">
+                    总计{{ domains.length | d(0) }}个课程
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="medium-12 columns">
+            <div class="section">
+                <div class="section__body">
+                    {% if not domains.length %}
+                        {{ nothing.render('没有课程。') }}
+                    {% else %}
+                    <div class="row">
+                        {% set course_cols = 3 %}
+                        {% set class_name = 'medium-' + (12 / course_cols) %}
+                        {% for item in domains %}
+                            <div class="{{ class_name }} columns">
+                                <div class="course-card">
+                                    <div class="course-card-header">
+                                        <h2 style="font-weight: normal" data-tooltip="{{ item.name }}">{{ item.name }}</h2>
+                                    </div>
+                                    <div class="course-card-body">
+                                        <p>创建者：{{ user.render_inline(uDocs[item.owner],false,false,false) }}</p>
+                                        <p>加入人数：{{ item.users }}</p>
+                                        <div class="text-right">
+                                            <a href="/d/{{ item._id }}/">
+                                                <button class="rounded primary button">学习</button>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if loop.index % course_cols and loop.last %}
+                                {% for i in range(0, course_cols - (loop.index % course_cols)) -%}
+                                    <div class="{{ class_name }} columns"></div>
+                                {%- endfor %}
+                            {% endif %}
+                            {% if loop.index % course_cols === 0 or loop.last %}
+                                </div>
+                                {% if not loop.last %}
+                                    <div style="height: 20px;"></div>
+                                    <div class="row">
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
