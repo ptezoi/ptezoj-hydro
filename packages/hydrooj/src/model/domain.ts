@@ -51,6 +51,7 @@ class DomainModel {
             bulletin,
             roles: {},
             avatar: '',
+            publicToCourses: false
         };
         await bus.serial('domain/create', ddoc);
         await coll.insertOne(ddoc);
