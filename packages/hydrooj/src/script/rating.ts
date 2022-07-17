@@ -22,7 +22,6 @@ interface RpDef {
     base: number;
 }
 
-
 export const RpTypes: Record<string, RpDef> = {
     delta: {
         async run(domainIds, udict) {
@@ -39,7 +38,6 @@ export const RpTypes: Record<string, RpDef> = {
     },
 };
 global.Hydro.model.rp = RpTypes;
-
 
 async function runProblem(pdoc: ProblemDoc, udict: ND): Promise<void>;
 async function runProblem(domainId: string, pid: number, udict: ND): Promise<void>;
