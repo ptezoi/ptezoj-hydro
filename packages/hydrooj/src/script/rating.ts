@@ -16,6 +16,31 @@ export const description = 'Calculate rp of a domain, or all domains';
 
 type ND = NumericDictionary<number>;
 
+interface RpDef {
+    run(domainIds: string[], udict: ND, report: Function): Promise<void>;
+    hidden: boolean;
+    base: number;
+}
+
+
+export const RpTypes: Record<string, RpDef> = {
+    delta: {
+        async run(domainIds, udict) {
+            const dudocs = unionWith(
+                await domain.getMultiUserInDomain(
+                    '', { domainId: { $in: domainIds }, rpdelta: { $exists: true } },
+                ).toArray(),
+                (a, b) => a.uid === b.uid,
+            );
+            for (const dudoc of dudocs) udict[dudoc.uid] = dudoc.rpdelta;
+        },
+        hidden: true,
+        base: 0,
+    },
+};
+global.Hydro.model.rp = RpTypes;
+
+
 async function runProblem(pdoc: ProblemDoc, udict: ND): Promise<void>;
 async function runProblem(domainId: string, pid: number, udict: ND): Promise<void>;
 async function runProblem(...arg: any[]) {
