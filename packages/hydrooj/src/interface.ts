@@ -371,6 +371,7 @@ export interface DomainDoc extends Record<string, any> {
     bulletin: string,
     _join?: any,
     host?: string[],
+    publicToCourses: boolean
 }
 
 export interface DomainUnion {

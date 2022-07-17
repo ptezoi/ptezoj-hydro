@@ -35,9 +35,13 @@
                 markdown:true,
                 required:true
             }) }}
-            {{ form.form_text({
+            <!-- {{ form.form_text({
                 label:'Avatar',
                 name:'avatar'
+            }) }} -->
+            {{ form.checkbox({
+                label:'公开到课程页面',
+                name:'publicToCourses'
             }) }}
           <div class="row"><div class="columns">
             <input type="hidden" name="csrfToken" value="{{ handler.csrfToken }}">

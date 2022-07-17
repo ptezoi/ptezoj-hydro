@@ -92,8 +92,13 @@ class DomainEditHandler extends ManageHandler {
     async post(args) {
         if (args.operation) return;
         const $set = {};
+        const booleanKeys = args.booleanKeys || {};
+        delete args.booleanKeys;
         for (const key in args) {
             if (DOMAIN_SETTINGS_BY_KEY[key]) $set[key] = args[key];
+        }
+        for (const key in booleanKeys) {
+            if (DOMAIN_SETTINGS_BY_KEY[key]) $set[key] = !!args[key];
         }
         await domain.edit(args.domainId, $set);
         this.response.redirect = this.url('domain_dashboard');

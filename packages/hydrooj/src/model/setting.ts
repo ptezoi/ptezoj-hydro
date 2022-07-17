@@ -154,6 +154,7 @@ DomainSetting(
     Setting('setting_domain', 'share', '', 'text', 'Share problem with domain (* for any)'),
     Setting('setting_domain', 'bulletin', '', 'markdown', 'Bulletin'),
     Setting('setting_domain', 'langs', '', 'text', 'Allowed langs', null),
+    Setting('setting_domain', 'publicToCourses', false, 'boolean', '公开到课程页面', null),
     Setting('setting_storage', 'host', '', 'text', 'Custom host', null, FLAG_HIDDEN | FLAG_DISABLED),
 );
 
