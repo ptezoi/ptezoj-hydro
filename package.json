@@ -70,6 +70,8 @@
     "dependencies": {
         "@hydrooj/fps-importer": "workspace:packages/fps-importer",
         "@hydrooj/geoip": "workspace:packages/geoip",
-        "hydro-pdf-preview": "^1.0.2"
+        "@hydrooj/language-server": "github:hydro-dev/language-server",
+        "hydro-pdf-preview": "^1.0.2",
+        "hydrooj-pastebin-plus": "^1.0.5"
     }
 }
