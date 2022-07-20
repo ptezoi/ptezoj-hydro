@@ -66,11 +66,11 @@ async function runProblem(...arg: any[]) {
         for (const psdoc of psdocs) {
             if (rdict[psdoc.rid.toHexString()]) {
                 const rp = rdict[psdoc.rid.toHexString()].score * p;
-                udict[psdoc.uid] = (udict[psdoc.uid] || 1500) + rp;
+                udict[psdoc.uid] = (udict[psdoc.uid] || 0) + rp;
             }
         }
     }
-    udict[pdoc.owner] = (udict[pdoc.owner] || 1500) + pdoc.difficulty;
+    udict[pdoc.owner] = (udict[pdoc.owner] || 0) + pdoc.difficulty;
 }
 
 async function runContest(tdoc: Tdoc<30 | 60>, udict: ND, report: Function): Promise<void>;
@@ -92,7 +92,7 @@ async function runContest(...arg: any[]) {
     const [rankedTsdocs] = await contest.RULES[tdoc.rule].ranked(tdoc, cursor);
     const users = [];
     for (const result of rankedTsdocs) {
-        users.push({ uid: result[1].uid, rank: result[0], old: udict[result[1].uid] || 1500 });
+        users.push({ uid: result[1].uid, rank: result[0], old: udict[result[1].uid] || 0 });
     }
     // FIXME sum(rating.new) always less than sum(rating.old)
     const rated = rating(users);
@@ -109,7 +109,7 @@ async function runContest(...arg: any[]) {
 }
 
 export async function calcLevel(domainId: string, report: Function) {
-    const filter = { rp: { $ne: 1500, $exists: true } };
+    const filter = { rp: { $ne: 0, $exists: true } };
     const ducnt = await domain.getMultiUserInDomain(domainId, filter).count();
     await domain.setMultiUserInDomain(domainId, {}, { level: 0, rank: null });
     if (!ducnt) return;
@@ -180,7 +180,7 @@ async function runInDomain(id: string, isSub: boolean, report: Function) {
             });
         }
     }
-    await domain.setMultiUserInDomain(id, {}, { rp: 1500 });
+    await domain.setMultiUserInDomain(id, {}, { rp: 0 });
     const tasks = [];
     async function update(uid: number, rp: number) {
         const udoc = await UserModel.getById(id, +uid);
