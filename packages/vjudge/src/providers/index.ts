@@ -1,4 +1,5 @@
 import codeforces from './codeforces';
+import hduoj from './hduoj';
 import luogu from './luogu';
 import poj from './poj';
 import spoj from './spoj';
@@ -11,7 +12,7 @@ declare module 'hydrooj/src/interface' {
 }
 
 const vjudge: Record<string, any> = {
-    codeforces, luogu, poj, spoj, uoj,
+    codeforces, hduoj, luogu, poj, spoj, uoj,
 };
 global.Hydro.vjudge = vjudge;
 export = vjudge;
