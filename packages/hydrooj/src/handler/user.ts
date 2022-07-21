@@ -16,10 +16,12 @@ import domain from '../model/domain';
 import oauth from '../model/oauth';
 import * as oplog from '../model/oplog';
 import problem, { ProblemDoc } from '../model/problem';
+import student from '../model/stuinfo';
 import * as system from '../model/system';
 import task from '../model/task';
 import token from '../model/token';
 import user from '../model/user';
+import * as bus from '../service/bus';
 import {
     Handler, param, post, Route, Types,
 } from '../service/server';
@@ -414,6 +416,70 @@ class OauthCallbackHandler extends Handler {
     }
 }
 
+// HGNUOJ 学生信息
+class StudentInfoHandler extends Handler {
+    // @param('uid', Types.Int)
+    // async get(domainId: string, uid: number) {
+    //     const res = await student.getStuInfoById(uid);
+    //     this.response.body = res;
+    // }
+
+    @param('uid', Types.Int)
+    @post('cls', Types.String, true)
+    @post('name', Types.String, true)
+    @post('stuid', Types.String, true)
+    async post(domainId: string, uid: number, cls?: string, name?: string, stuid?: string) {
+        const studoc = {
+            class: cls, name, stuid,
+        };
+        const $set = {};
+        for (const key in studoc) {
+            if (studoc[key] !== undefined) $set[key] = studoc[key];
+        }
+        const res = await student.setById(uid, $set);
+        return res;
+    }
+}
+
+// HGNUOJ 班级信息
+class StudentClassHandler extends Handler {
+    @param('cls', Types.String)
+    async get(domainId: string, cls: string) {
+        const udocs = await student.getUserListByClassName(domainId, cls);
+        udocs.sort((a, b) => a.stuid - b.stuid);
+        const sdocs_temp = await Promise.all(udocs.map(async ({ _id }) => {
+            const { updateAt } = await token.getMostRecentSessionByUid(_id) || { updateAt: null };
+            return { _id, updateAt };
+        }));
+        const sdocs = {};
+        for (const sdoc of sdocs_temp) sdocs[sdoc['_id']] = sdoc['updateAt'];
+        this.response.template = 'stu_class_students.html';
+        this.response.body = {
+            className: cls,
+            udocs,
+            sdocs,
+        };
+        this.UiContext.extraTitleContent = cls;
+    }
+}
+class ClassHandler extends Handler {
+    async get(domainId: string) {
+        const cls: { clsList:any[] } = await student.getClassList();
+        const starStudents: any[] = await Promise.all(
+            cls.clsList.slice(0, 2).map(async ({ _id }) => ({ _id, students: await student.getUserListByClassNameOrdered(domainId, _id, 3) })),
+        );
+        this.response.template = 'stu_class_list.html';
+        this.response.body = {
+            ...cls, starStudents,
+        };
+    }
+
+    async postInvalidateCache() {
+        await bus.broadcast('student/invalidateClassListCache');
+        await bus.broadcast('student/invalidateActivityCache');
+        this.back();
+    }
+}
 export async function apply() {
     Route('user_login', '/login', UserLoginHandler);
     Route('user_oauth', '/oauth/:type', OauthHandler);
@@ -425,6 +491,9 @@ export async function apply() {
     Route('user_lostpass_with_code', '/lostpass/:code', UserLostPassWithCodeHandler);
     Route('user_delete', '/user/delete', UserDeleteHandler, PRIV.PRIV_USER_PROFILE);
     Route('user_detail', '/user/:uid', UserDetailHandler);
+    Route('student_detail', '/student/:uid', StudentInfoHandler, PRIV.PRIV_USER_PROFILE);
+    Route('student_class', '/class/:cls', StudentClassHandler, PRIV.PRIV_USER_PROFILE);
+    Route('class', '/class', ClassHandler, PRIV.PRIV_USER_PROFILE);
 }
 
 global.Hydro.handler.user = apply;

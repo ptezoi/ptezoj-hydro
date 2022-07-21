@@ -108,7 +108,13 @@ export interface UserPreferenceDoc {
     uid: number;
     content: string;
 }
-
+/* HGNUOJ 学生信息 */
+export interface Student extends Dictionary<any> {
+    _id: number,
+    name: string,
+    stuid: string,
+    class: string
+}
 export type ownerInfo = { owner: number, maintainer?: number[] };
 
 export type User = import('./model/user').User;
@@ -307,7 +313,7 @@ export interface RecordDoc {
 }
 
 export interface ScoreboardNode {
-    type: 'string' | 'rank' | 'user' | 'email' | 'record' | 'records' | 'problem' | 'solved' | 'time' | 'total_score';
+    type: 'string' | 'rank' | 'user' | 'email' | 'record' | 'records' | 'problem' | 'solved' | 'time' | 'total_score' | 'stu_class' | 'stu_name' | 'stu_stuid';
     value: string;
     raw?: any;
     score?: number;
@@ -588,6 +594,7 @@ export interface Collections {
     'document.status': any;
     'problem': ProblemDoc;
     'user': Udoc;
+    'stu.info': Student;
     'user.preference': UserPreferenceDoc;
     'vuser': VUdoc;
     'user.group': GDoc;
@@ -608,6 +615,7 @@ export interface Collections {
 }
 
 export interface Model {
+    student: typeof import('./model/stuinfo').default;
     blacklist: typeof import('./model/blacklist').default,
     blog: typeof import('./model/blog'),
     builtin: typeof import('./model/builtin'),
