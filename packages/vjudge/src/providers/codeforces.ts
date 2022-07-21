@@ -265,6 +265,7 @@ export default class CodeforcesProvider implements IBasicProvider {
         const res = await this.get(id.startsWith('GYM')
             ? `/gym/${contestId}/problem/${problemId}`
             : `/problemset/problem/${contestId}/${problemId}`);
+        if (contestId === '1036325') return null;
         if (!res.text) return await this.getPdfProblem(id, meta);
         const $dom = new JSDOM(res.text.replace(/\$\$\$/g, '$'));
         if ($dom.window.document.querySelector('html').innerHTML.search('<th>Actions</th>') !== -1) return null;
