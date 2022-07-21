@@ -119,6 +119,10 @@ class UserLoginHandler extends Handler {
         if (!system.get('server.login')) throw new LoginError('Builtin login disabled.');
         let udoc = await user.getByEmail(domainId, uname);
         if (!udoc) udoc = await user.getByUname(domainId, uname);
+        if (!udoc) {
+            const studoc = await student.getStuInfoByStuId(uname);
+            if (studoc) udoc = await user.getById(domainId, studoc._id);
+        }
         if (!udoc) throw new UserNotFoundError(uname);
         await Promise.all([
             this.limitRate('user_login', 60, 5),
@@ -214,15 +218,29 @@ class UserRegisterWithCodeHandler extends Handler {
     @param('verifyPassword', Types.String)
     @param('uname', Types.Name, isUname)
     @param('code', Types.String)
+    // 学生信息
+    @param('stuname', Types.String, (s) => /^[\u4E00-\u9FA5]{2,4}$/.test(s))
+    @param('stuid', Types.String, (s) => /^2\d{7}$|2\d{12}$/.test(s))
+    @param('stuclass', Types.String, (s) => /^[\u4E00-\u9FA5]{2,4}[1-2][0-9]{3}$/.test(s))
     async post(
-        domainId: string, password: string, verify: string,
-        uname: string, code: string,
+        domainId: string,
+        password: string,
+        verify: string,
+        uname: string,
+        code: string,
+        // 学生信息
+        stuname: string,
+        stuid: string,
+        stuclass: string,
     ) {
         const tdoc = await token.get(code, token.TYPE_REGISTRATION);
         if (!tdoc || (!tdoc.mail && !tdoc.phone)) throw new InvalidTokenError(token.TYPE_REGISTRATION, code);
         if (password !== verify) throw new VerifyPasswordError();
+        if (await student.getStuInfoByStuId(stuid)) throw new UserAlreadyExistError(stuid);
         if (tdoc.phone) tdoc.mail = `${tdoc.phone}@hydro.local`;
         const uid = await user.create(tdoc.mail, uname, password, undefined, this.request.ip);
+        // 插入学生信息
+        await student.create(uid, stuclass, stuname, stuid);
         await token.del(code, token.TYPE_REGISTRATION);
         const [id, mailDomain] = tdoc.mail.split('@');
         const $set: any = {};
@@ -327,9 +345,10 @@ class UserDetailHandler extends Handler {
             sdoc.updateIp = '';
             sdoc._id = '';
         }
+        const studoc = await student.getStuInfoById(uid);
         this.response.template = 'user_detail.html';
         this.response.body = {
-            isSelfProfile, udoc, sdoc, pdocs, tags,
+            isSelfProfile, udoc, sdoc, pdocs, tags, studoc,
         };
         this.UiContext.extraTitleContent = udoc.uname;
     }
