@@ -261,7 +261,7 @@ export default class CodeforcesProvider implements IBasicProvider {
     async getProblem(id: string, meta: Record<string, any>) {
         logger.info(id);
         if (id === 'P936E') return null; // Problem Missing
-        if (id.startsWith('GYM103632')) return null; // GYM Problem Missing
+        if (id.startsWith('GYM') && !Number.isNaN(Number(id[9]))) return null; // GYM Problem Missing
         const [, contestId, problemId] = parseProblemId(id);
         const res = await this.get(id.startsWith('GYM')
             ? `/gym/${contestId}/problem/${problemId}`

@@ -313,6 +313,7 @@ export interface RecordDoc {
 }
 
 export interface ScoreboardNode {
+    // eslint-disable-next-line max-len
     type: 'string' | 'rank' | 'user' | 'email' | 'record' | 'records' | 'problem' | 'solved' | 'time' | 'total_score' | 'stu_class' | 'stu_name' | 'stu_stuid';
     value: string;
     raw?: any;
