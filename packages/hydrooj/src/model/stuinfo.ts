@@ -15,7 +15,7 @@ const coll = db.collection('stu.info');
 const domainUsercoll = db.collection('domain.user');
 
 const logger = new Logger('model/stuinfo');
-const cache = new LRU<string, any>({ max: 500, maxAge: 300 * 1000 });
+const cache = new LRU<string, any>({ max: 500, ttl: 300 * 1000 });
 
 export function deleteStudentCache(studoc: Student | string | undefined | null, receiver = false) {
     if (!studoc) return;
@@ -26,12 +26,12 @@ export function deleteStudentCache(studoc: Student | string | undefined | null, 
         );
     }
     if (typeof studoc === 'string') {
-        for (const key of cache.keys().filter((k) => k.endsWith(`/${studoc}`))) cache.del(key);
+        for (const key of [...cache.keys()].filter((k) => k.endsWith(`/${studoc}`))) cache.delete(key);
         return;
     }
     const id = [`uid/${studoc._id.toString()}`, `stuid/${studoc.stuid.toLowerCase()}`];
-    for (const key of cache.keys().filter((k) => id.includes(`${k.split('/')[0]}/${k.split('/')[1]}`))) {
-        cache.del(key);
+    for (const key of [...cache.keys()].filter((k) => id.includes(`${k.split('/')[0]}/${k.split('/')[1]}`))) {
+        cache.delete(key);
     }
 }
 bus.on('student/delcache', (content) => deleteStudentCache(JSON.parse(content), true));
@@ -190,10 +190,10 @@ class StudentModel {
     }
 }
 
-bus.on('student/cacheClassList', (content: string) => cache.set('classList', JSON.parse(content), 10 * 60 * 1000));
-bus.on('student/cacheActivity', (cls:string, content: string) => cache.set(`activity/${cls}`, JSON.parse(content), 15 * 60 * 1000));
-bus.on('student/invalidateClassListCache', () => cache.del('classList'));
-bus.on('student/invalidateActivityCache', () => cache.keys().filter((key) => /^activity\//.test(key)).forEach((key) => cache.del(key)));
+bus.on('student/cacheClassList', (content: string) => cache.set('classList', JSON.parse(content)));
+bus.on('student/cacheActivity', (cls:string, content: string) => cache.set(`activity/${cls}`, JSON.parse(content)));
+bus.on('student/invalidateClassListCache', () => cache.delete('classList'));
+bus.on('student/invalidateActivityCache', () => [...cache.keys()].filter((key) => /^activity\//.test(key)).forEach((key) => cache.delete(key)));
 
 bus.once('app/started', () => db.ensureIndexes(
     coll,
