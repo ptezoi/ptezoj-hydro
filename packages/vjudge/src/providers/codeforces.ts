@@ -29,6 +29,7 @@ puppeteer.use(StealthPlugin()).use(PortalPlugin({
 }));
 
 function parseProblemId(id: string) {
+    logger.info('---------------------------', id);
     const [, type, contestId, problemId] = id.startsWith('P921')
         ? ['', '921', '01']
         : /^(P|GYM)(\d+)([A-Z][0-9]*)$/.exec(id);
@@ -266,6 +267,7 @@ export default class CodeforcesProvider implements IBasicProvider {
             : `/problemset/problem/${contestId}/${problemId}`);
         if (!res.text) return await this.getPdfProblem(id, meta);
         const $dom = new JSDOM(res.text.replace(/\$\$\$/g, '$'));
+        if ($dom.window.document.querySelector('html').innerHTML.search('<th>Actions</th>') !== -1) return null;
         const tag = Array.from($dom.window.document.querySelectorAll('.tag-box')).map((i) => i.textContent.trim());
         const text = $dom.window.document.querySelector('.problem-statement').innerHTML;
         const { window: { document } } = new JSDOM(text);
@@ -328,7 +330,7 @@ export default class CodeforcesProvider implements IBasicProvider {
     }
 
     // TL;DR; add `gym` to this list to enable codeforces gym
-    entryProblemLists = ['main'];
+    entryProblemLists = ['main', 'gym'];
     async listProblem(page: number, resync = false, listName: string) {
         if (resync && page > 1) return [];
         if (resync && listName.startsWith('GYM')) return [];
@@ -348,7 +350,7 @@ export default class CodeforcesProvider implements IBasicProvider {
             return Array.from(document.querySelectorAll('.id>a')).map((i) => `P${i.innerHTML.trim()}`);
         }
         if (listName === 'gym') {
-            return Array.from(document.querySelectorAll('[data-contestId]')).map((i) => `LIST::GYM${(+i.getAttribute('data-contestId')) - 100000}`);
+            return Array.from(document.querySelectorAll('[data-contestId]')).map((i) => `LIST::GYM${(+i.getAttribute('data-contestId'))}`);
         }
         return Array.from(document.querySelectorAll('.id a')).map((i) => {
             const detail = i.parentElement.parentElement.children[1].children[0];
@@ -365,7 +367,7 @@ export default class CodeforcesProvider implements IBasicProvider {
         const programTypeId = lang.includes('codeforces.') ? lang.split('codeforces.')[1] : '54';
         const comment = setting.langs[lang].comment;
         if (comment) {
-            const msg = `Hydro submission #${info.rid}@${new Date().getTime()}`;
+            const msg = `HGNUOJ submission #${info.rid}@${new Date().getTime()}`;
             if (typeof comment === 'string') code = `${comment} ${msg}\n${code}`;
             else if (comment instanceof Array) code = `${comment[0]} ${msg} ${comment[1]}\n${code}`;
         }
