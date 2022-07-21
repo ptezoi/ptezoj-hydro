@@ -44,10 +44,11 @@ export const SYSTEM_SETTINGS_BY_KEY: SettingDict = {};
 
 // eslint-disable-next-line max-len
 export type SettingType = 'text' | 'yaml' | 'number' | 'float' | 'markdown' | 'password' | 'boolean' | 'textarea' | [string, string][] | Record<string, string>;
-
+type Validator = (value: any) => boolean;
 export const Setting = (
     family: string, key: string, value: any = null,
     type: SettingType = 'text', name = '', desc = '', flag = 0,
+    validator?: Validator,
 ): _Setting => {
     let subType = '';
     if (type === 'yaml' && typeof value !== 'string') {
@@ -65,6 +66,7 @@ export const Setting = (
         subType,
         type: typeof type === 'object' ? 'select' : type,
         range: typeof type === 'object' ? type : null,
+        validator,
     };
 };
 
@@ -133,6 +135,12 @@ PreferenceSetting(
 );
 
 AccountSetting(
+    Setting('setting_student', 'stuid', '', 'text', 'Stu_ID',
+        '', undefined, (s) => /^2\d{7}$|2\d{12}$/.test(s)),
+    Setting('setting_student', 'name', '', 'text', 'Stu_RealName',
+        '', undefined, (s) => /^[\u4E00-\u9FA5]{2,4}$/.test(s)),
+    Setting('setting_student', 'class', null, 'text', 'Stu_ClassName',
+        '', undefined, (s) => /^[\u4E00-\u9FA5]{2,4}[1-2][0-9]{3}$/.test(s)),
     Setting('setting_info', 'avatar', '', 'text', 'Avatar',
         'Allow using gravatar:email qq:id github:name url:link format.'),
     Setting('setting_info', 'qq', null, 'text', 'QQ'),
