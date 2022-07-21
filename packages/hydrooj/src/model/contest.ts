@@ -353,12 +353,15 @@ const homework = buildContestRule({
         const columns: ScoreboardNode[] = [
             { type: 'rank', value: _('Rank') },
             { type: 'user', value: _('User') },
+            { type: 'stu_class', value: _('Stu_Class') },
+            { type: 'stu_name', value: _('Stu_Name') },
+            // { type: 'stu_stuid', value: _('Stu_Stuid') },
             { type: 'total_score', value: _('Score') },
         ];
         if (isExport) {
             columns.push({ type: 'string', value: _('Original Score') });
         }
-        columns.push({ type: 'time', value: _('Total Time') });
+        // columns.push({ type: 'time', value: _('Total Time') });
         for (let i = 1; i <= tdoc.pids.length; i++) {
             const pid = tdoc.pids[i - 1];
             if (isExport) {
@@ -371,10 +374,10 @@ const homework = buildContestRule({
                         type: 'string',
                         value: '#{0} {1}'.format(i, _('Original Score')),
                     },
-                    {
-                        type: 'time',
-                        value: '#{0} {1}'.format(i, _('Time (Seconds)')),
-                    },
+                    // {
+                    //     type: 'time',
+                    //     value: '#{0} {1}'.format(i, _('Time (Seconds)')),
+                    // },
                 );
             } else {
                 columns.push({
@@ -399,32 +402,44 @@ const homework = buildContestRule({
                 },
                 {
                     type: 'string',
+                    value: udict[tsdoc.uid].class || '',
+                },
+                {
+                    type: 'string',
+                    value: udict[tsdoc.uid].name || '',
+                },
+                // {
+                //     type: 'string',
+                //     value: udict[tsdoc.uid].stuid || '',
+                // },
+                {
+                    type: 'string',
                     value: tsdoc.penaltyScore || 0,
                 },
             ];
             if (isExport) {
                 row.push({ type: 'string', value: tsdoc.score || 0 });
             }
-            row.push({ type: 'time', value: formatSeconds(tsdoc.time || 0, false), raw: tsdoc.time });
+            // row.push({ type: 'time', value: formatSeconds(tsdoc.time || 0, false), raw: tsdoc.time });
             for (const pid of tdoc.pids) {
                 const rid = tsddict[pid]?.rid;
                 const colScore = tsddict[pid]?.penaltyScore || '';
                 const colOriginalScore = tsddict[pid]?.score || '';
-                const colTime = tsddict[pid]?.time || '';
-                const colTimeStr = colTime ? formatSeconds(colTime, false) : '';
+                // const colTime = tsddict[pid]?.time || '';
+                // const colTimeStr = colTime ? formatSeconds(colTime, false) : '';
                 if (isExport) {
                     row.push(
                         { type: 'string', value: colScore },
                         { type: 'string', value: colOriginalScore },
-                        { type: 'time', value: colTime },
+                        // { type: 'time', value: colTime },
                     );
                 } else {
                     row.push({
                         type: 'record',
                         score: tsddict[pid]?.penaltyScore || 0,
                         value: colScore === colOriginalScore
-                            ? '{0}\n{1}'.format(colScore, colTimeStr)
-                            : '{0} / {1}\n{2}'.format(colScore, colOriginalScore, colTimeStr),
+                            ? '{0}'.format(colScore)
+                            : '{0} / {1}'.format(colScore, colOriginalScore),
                         raw: rid,
                     });
                 }

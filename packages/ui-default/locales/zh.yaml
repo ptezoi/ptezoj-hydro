@@ -944,3 +944,15 @@ You've already claimed this homework.: 您已认领过该作业。
 You've already voted.: 您已经投过票。
 Your permission: 您的权限
 Your role: 您的角色
+# HGNUOJ Added
+stu_class_list: 班级列表
+stu_class_students: 班级详情
+setting_student: 学生信息
+Stu_ID: 学号
+Stu_ClassName: 班级
+Reg_Stu_ClassName: 专业班级(例如：软工1901、计算机2006)
+Stu_RealName: 姓名
+reg_stuwarn: 请使用真实学生信息填写！
+manage_student_import: 学生批量导入
+manage_teacher_register: 教师注册
+manage_user_changepassword: 修改用户密码

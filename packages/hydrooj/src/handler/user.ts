@@ -16,10 +16,12 @@ import domain from '../model/domain';
 import oauth from '../model/oauth';
 import * as oplog from '../model/oplog';
 import problem, { ProblemDoc } from '../model/problem';
+import student from '../model/stuinfo';
 import * as system from '../model/system';
 import task from '../model/task';
 import token from '../model/token';
 import user from '../model/user';
+import * as bus from '../service/bus';
 import {
     Handler, param, post, Route, Types,
 } from '../service/server';
@@ -117,6 +119,10 @@ class UserLoginHandler extends Handler {
         if (!system.get('server.login')) throw new LoginError('Builtin login disabled.');
         let udoc = await user.getByEmail(domainId, uname);
         if (!udoc) udoc = await user.getByUname(domainId, uname);
+        if (!udoc) {
+            const studoc = await student.getStuInfoByStuId(uname);
+            if (studoc) udoc = await user.getById(domainId, studoc._id);
+        }
         if (!udoc) throw new UserNotFoundError(uname);
         await Promise.all([
             this.limitRate('user_login', 60, 5),
@@ -212,15 +218,29 @@ class UserRegisterWithCodeHandler extends Handler {
     @param('verifyPassword', Types.String)
     @param('uname', Types.Name, isUname)
     @param('code', Types.String)
+    // 学生信息
+    @param('stuname', Types.String, (s) => /^[\u4E00-\u9FA5]{2,4}$/.test(s))
+    @param('stuid', Types.String, (s) => /^2\d{7}$|2\d{12}$/.test(s))
+    @param('stuclass', Types.String, (s) => /^[\u4E00-\u9FA5]{2,4}[1-2][0-9]{3}$/.test(s))
     async post(
-        domainId: string, password: string, verify: string,
-        uname: string, code: string,
+        domainId: string,
+        password: string,
+        verify: string,
+        uname: string,
+        code: string,
+        // 学生信息
+        stuname: string,
+        stuid: string,
+        stuclass: string,
     ) {
         const tdoc = await token.get(code, token.TYPE_REGISTRATION);
         if (!tdoc || (!tdoc.mail && !tdoc.phone)) throw new InvalidTokenError(token.TYPE_REGISTRATION, code);
         if (password !== verify) throw new VerifyPasswordError();
+        if (await student.getStuInfoByStuId(stuid)) throw new UserAlreadyExistError(stuid);
         if (tdoc.phone) tdoc.mail = `${tdoc.phone}@hydro.local`;
         const uid = await user.create(tdoc.mail, uname, password, undefined, this.request.ip);
+        // 插入学生信息
+        await student.create(uid, stuclass, stuname, stuid);
         await token.del(code, token.TYPE_REGISTRATION);
         const [id, mailDomain] = tdoc.mail.split('@');
         const $set: any = {};
@@ -325,9 +345,10 @@ class UserDetailHandler extends Handler {
             sdoc.updateIp = '';
             sdoc._id = '';
         }
+        const studoc = await student.getStuInfoById(uid);
         this.response.template = 'user_detail.html';
         this.response.body = {
-            isSelfProfile, udoc, sdoc, pdocs, tags,
+            isSelfProfile, udoc, sdoc, pdocs, tags, studoc,
         };
         this.UiContext.extraTitleContent = udoc.uname;
     }
@@ -414,6 +435,70 @@ class OauthCallbackHandler extends Handler {
     }
 }
 
+// HGNUOJ 学生信息
+class StudentInfoHandler extends Handler {
+    // @param('uid', Types.Int)
+    // async get(domainId: string, uid: number) {
+    //     const res = await student.getStuInfoById(uid);
+    //     this.response.body = res;
+    // }
+
+    @param('uid', Types.Int)
+    @post('cls', Types.String, true)
+    @post('name', Types.String, true)
+    @post('stuid', Types.String, true)
+    async post(domainId: string, uid: number, cls?: string, name?: string, stuid?: string) {
+        const studoc = {
+            class: cls, name, stuid,
+        };
+        const $set = {};
+        for (const key in studoc) {
+            if (studoc[key] !== undefined) $set[key] = studoc[key];
+        }
+        const res = await student.setById(uid, $set);
+        return res;
+    }
+}
+
+// HGNUOJ 班级信息
+class StudentClassHandler extends Handler {
+    @param('cls', Types.String)
+    async get(domainId: string, cls: string) {
+        const udocs = await student.getUserListByClassName(domainId, cls);
+        udocs.sort((a, b) => a.stuid - b.stuid);
+        const sdocs_temp = await Promise.all(udocs.map(async ({ _id }) => {
+            const { updateAt } = await token.getMostRecentSessionByUid(_id) || { updateAt: null };
+            return { _id, updateAt };
+        }));
+        const sdocs = {};
+        for (const sdoc of sdocs_temp) sdocs[sdoc['_id']] = sdoc['updateAt'];
+        this.response.template = 'stu_class_students.html';
+        this.response.body = {
+            className: cls,
+            udocs,
+            sdocs,
+        };
+        this.UiContext.extraTitleContent = cls;
+    }
+}
+class ClassHandler extends Handler {
+    async get(domainId: string) {
+        const cls: { clsList:any[] } = await student.getClassList();
+        const starStudents: any[] = await Promise.all(
+            cls.clsList.slice(0, 2).map(async ({ _id }) => ({ _id, students: await student.getUserListByClassNameOrdered(domainId, _id, 3) })),
+        );
+        this.response.template = 'stu_class_list.html';
+        this.response.body = {
+            ...cls, starStudents,
+        };
+    }
+
+    async postInvalidateCache() {
+        await bus.broadcast('student/invalidateClassListCache');
+        await bus.broadcast('student/invalidateActivityCache');
+        this.back();
+    }
+}
 export async function apply() {
     Route('user_login', '/login', UserLoginHandler);
     Route('user_oauth', '/oauth/:type', OauthHandler);
@@ -425,6 +510,9 @@ export async function apply() {
     Route('user_lostpass_with_code', '/lostpass/:code', UserLostPassWithCodeHandler);
     Route('user_delete', '/user/delete', UserDeleteHandler, PRIV.PRIV_USER_PROFILE);
     Route('user_detail', '/user/:uid', UserDetailHandler);
+    Route('student_detail', '/student/:uid', StudentInfoHandler, PRIV.PRIV_USER_PROFILE);
+    Route('student_class', '/class/:cls', StudentClassHandler, PRIV.PRIV_USER_PROFILE);
+    Route('class', '/class', ClassHandler, PRIV.PRIV_USER_PROFILE);
 }
 
 global.Hydro.handler.user = apply;

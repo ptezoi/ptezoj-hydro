@@ -16,6 +16,7 @@ import domain from './domain';
 import * as setting from './setting';
 import * as system from './system';
 import token from './token';
+import StudentModel from './stuinfo';
 
 export const coll: Collection<Udoc> = db.collection('user');
 // Virtual user, only for display in contest.
@@ -180,6 +181,11 @@ class UserModel {
         if (cache.has(`id/${_id}/${domainId}`)) return cache.get(`id/${_id}/${domainId}`) || null;
         const udoc = await (_id < -999 ? collV : coll).findOne({ _id });
         if (!udoc) return null;
+        // HGNUOJ
+        const studoc = await StudentModel.getStuInfoById(_id);
+        for (const key in studoc) {
+            udoc[key] = studoc[key];
+        }
         const dudoc = await domain.getDomainUser(domainId, udoc);
         const groups = await UserModel.listGroup(domainId, _id);
         dudoc.group = groups.map((i) => i.name);
@@ -234,6 +240,22 @@ class UserModel {
         const op: any = {};
         if ($set && Object.keys($set).length) op.$set = $set;
         if ($unset && Object.keys($unset).length) op.$unset = $unset;
+        if (op.$set?.loginip) op.$addToSet = { ip: op.$set.loginip };
+        // HGNUOJ
+        const stuinfo = ['stuid', 'name', 'class'];
+        const studoc = { };
+        stuinfo.forEach((element) => {
+            if (op.$set[element]) {
+                studoc[element] = op.$set[element];
+                delete op.$set[element];
+            }
+        });
+        if (!(await StudentModel.getStuInfoById(uid))) await StudentModel.create(uid);
+        if (studoc['stuid']) {
+            const stu = await StudentModel.getStuInfoByStuId(studoc['stuid']);
+            if (stu && stu._id !== uid) throw new UserAlreadyExistError(studoc['stuid']);
+        }
+        StudentModel.setById(uid, studoc);
         if (op.$set?.loginip) op.$addToSet = { ip: op.$set.loginip };
         const res = await coll.findOneAndUpdate({ _id: uid }, op, { returnDocument: 'after' });
         deleteUserCache(res.value);
