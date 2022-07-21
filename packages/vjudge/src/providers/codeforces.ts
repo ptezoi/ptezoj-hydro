@@ -261,11 +261,11 @@ export default class CodeforcesProvider implements IBasicProvider {
     async getProblem(id: string, meta: Record<string, any>) {
         logger.info(id);
         if (id === 'P936E') return null; // Problem Missing
+        if (id.startsWith('GYM103632')) return null; // GYM Problem Missing
         const [, contestId, problemId] = parseProblemId(id);
         const res = await this.get(id.startsWith('GYM')
             ? `/gym/${contestId}/problem/${problemId}`
             : `/problemset/problem/${contestId}/${problemId}`);
-        if (contestId === '1036325') return null;
         if (!res.text) return await this.getPdfProblem(id, meta);
         const $dom = new JSDOM(res.text.replace(/\$\$\$/g, '$'));
         if ($dom.window.document.querySelector('html').innerHTML.search('<th>Actions</th>') !== -1) return null;
