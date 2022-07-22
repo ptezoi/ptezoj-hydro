@@ -270,7 +270,8 @@ export default class CodeforcesProvider implements IBasicProvider {
         const $dom = new JSDOM(res.text.replace(/\$\$\$/g, '$'));
         const judgestatement = $dom.window.document.querySelector('html').innerHTML;
         if (judgestatement.search('<th>Actions</th>') !== -1
-            || judgestatement.search('Statement is not available on English language') !== -1) {
+            || judgestatement.search('Statement is not available on English language') !== -1
+            || judgestatement.search('ограничение по времени на тест') !== -1) {
             return null;
         }
         const tag = Array.from($dom.window.document.querySelectorAll('.tag-box')).map((i) => i.textContent.trim());
