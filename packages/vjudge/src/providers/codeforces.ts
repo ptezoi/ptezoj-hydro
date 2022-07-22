@@ -32,7 +32,7 @@ function parseProblemId(id: string) {
     logger.info('---------------------------', id);
     const [, type, contestId, problemId] = id.startsWith('P921')
         ? ['', '921', '01']
-        : /^(P|GYM)(\d+)([A-Z][0-9]*)$/.exec(id);
+        : /^(P|GYM)(\d+)([A-Z]*[0-9]*)$/.exec(id);
     if (type === 'GYM' && (+contestId) < 100000) {
         return [type, ((+contestId) + 100000).toString(), problemId];
     }
@@ -268,7 +268,11 @@ export default class CodeforcesProvider implements IBasicProvider {
             : `/problemset/problem/${contestId}/${problemId}`);
         if (!res.text) return await this.getPdfProblem(id, meta);
         const $dom = new JSDOM(res.text.replace(/\$\$\$/g, '$'));
-        if ($dom.window.document.querySelector('html').innerHTML.search('<th>Actions</th>') !== -1) return null;
+        const judgestatement = $dom.window.document.querySelector('html').innerHTML;
+        if (judgestatement.search('<th>Actions</th>') !== -1
+            || judgestatement.search('Statement is not available on English language') !== -1) {
+            return null;
+        }
         const tag = Array.from($dom.window.document.querySelectorAll('.tag-box')).map((i) => i.textContent.trim());
         const text = $dom.window.document.querySelector('.problem-statement').innerHTML;
         const { window: { document } } = new JSDOM(text);
