@@ -208,7 +208,7 @@ async function handleOperation(operation) {
 function hideTags(target) {
   $(target).find('.problem__tag').get()
     .filter((i) => list.includes(i.children[0].innerHTML))
-    .forEach((i) => $(i).addClass('notag--hide'));
+    .forEach((i) => $(i).addClass('tag--hide'));
 }
 
 async function handleDownload(ev) {
