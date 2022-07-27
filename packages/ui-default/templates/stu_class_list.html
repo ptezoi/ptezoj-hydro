@@ -1,0 +1,113 @@
+{% extends "layout/basic.html" %}
+{% block content %}
+    <div class="row">
+        <div class="medium-12 columns">
+            <div class="section">
+                <div class="section__header">
+                    <h1 class="section__title">班级</h1>
+                    {% if handler.user.hasPriv(PRIV.PRIV_ALL) %}
+                    <div class="section__tools">
+                        <form method="post">
+                            <input type="hidden" name="csrfToken" value="{{ handler.csrfToken }}">
+                            <input type="hidden" name="operation" value="invalidate_cache">
+                            <button type="submit" class="primary button">刷新缓存</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="section__body">
+                    <p>总计{{ clsList.length }}个班级 <a data-tooltip="数据经过缓存处理">（刷新时间：{{ datetimeSpan(cacheTime) | safe }}）</a></p>
+                    {# <blockquote class="note"><strong>排序规则：</strong>总计AC数 -> 班级用户数 -> 总计提交数 -> 班级名称字典序</blockquote> #}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        {% for clsItem in starStudents %}
+        <div class="small-6 columns stu-starclass">
+            <div class="section">
+                <div class="section__header">
+                    <h1 class="section__title">明星班级：{{ clsItem._id }}</h1>
+                </div>
+                <div class="section__body no-padding">
+                    <table class="data-table">
+                        <colgroup>
+                            <col class="col--user-rank">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th class="col--user-rank">序号</th>
+                                <th class="col--user">用户名</th>
+                                {# <th class="col--user-ac">总计AC数</th>
+                                <th class="col--user-submit">总计提交数</th> #}
+                                <th class="col--user-rp">RP</th>
+                                <th class="col--user-bio">个人简介</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%- for udoc in clsItem.students -%}
+                                <tr>
+                                    <td class="col--user-rank">{{ loop.index }}</td>
+                                    <td class="col--user">{{ user.render_inline(udoc,classname=false,modbadge=false) }}</td>
+                                    {# <td class="col--user-ac">{{ udoc.nAccept }}</td>
+                                    <td class="col--user-submit">{{ udoc.nSubmit }}</td> #}
+                                    <td class="col--user-rp">{{ udoc.rp | default(1500,true) | round(0) }}</td>
+                                    <td class="col--user-bio">{{ udoc.bio|default('')|truncate(64, true)|markdownInline|safe }}</td>
+                                </tr>
+                            {%- endfor -%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="row">
+        <div class="large-12 columns">
+            <div class="section">
+                <div class="section__header">
+                    <h1 class="section__title">班级列表</h1>
+                </div>
+                <div class="section__body no-padding">
+                    <div>
+                        <table class="data-table">
+                            <colgroup>
+                                <col class="col--rank">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th class="col--rank">序号</th>
+                                    <th class="col--classname">班级</th>
+                                    <th class="col--stunum">用户数量</th>
+                                    <th class="col--ac">总计AC数</th>
+                                    <th class="col--submit">总计提交数</th>
+                                    <th class="col--rpavg">平均RP</th>
+                                    <th class="col--activity">活跃值</th>
+                                    <th class="col--weight">排名权重</th>
+                                </tr>
+                            </thead>
+                            <tbody class="stu-classlist">
+                                {%- for item in clsList -%}
+                                    <tr>
+                                        <td class="col--rank">{{ loop.index }}</td>
+                                        <td class="col--classname">
+                                            <a href="{{ url('student_class',cls=item._id) }}">
+                                                {{ item._id }}
+                                            </a>
+                                        </td>
+                                        <td class="col--stunum">{{ item.stuNum }}</td>
+                                        <td class="col--ac">{{ item.nAccept }}</td>
+                                        <td class="col--submit">{{ item.nSubmit }}</td>
+                                        <td class="col--rpavg">{{ item.rpAvg | round(0) }}</td>
+                                        <td class="col--activity">{{ item.activity | round(0) }}</td>
+                                        <td class="col--weight">{{ item.weight | round(0) }}</td>
+                                    </tr>
+                                {%- endfor -%}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}

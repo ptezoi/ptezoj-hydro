@@ -17,3 +17,4 @@ import './discussion';
 import './system';
 import './oplog';
 import './blog';
+import './stuinfo';

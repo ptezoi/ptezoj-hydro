@@ -1,0 +1,36 @@
+.page--stu_class_students
+  .col--rank
+    width: rem(80px)
+    position: relative
+
+  .col--stuid
+    width: rem(150px)
+    text-align: left
+
+  .col--user
+    width: rem(200px)
+    text-align: left
+
+  .col--gender
+    width: rem(80px)
+    text-align: left
+
+  .col--rp
+    width: rem(80px)
+    text-align: right
+
+  .col--ac
+    width: rem(100px)
+    text-align: right
+
+  .col--lastactive
+    width: rem(120px)
+    text-align: right
+
+  .col--bio
+    height: 36px !important
+    display: block
+
+  +mobile()
+    .col--bio, .col--stuid, .col--lastactive, .col--gender
+      display: none

@@ -1,0 +1,73 @@
+{% extends "layout/basic.html" %}
+{% block content %}
+    <div class="row">
+        <div class="medium-12 columns">
+            <div class="section">
+                <div class="section__header">
+                    <h1 class="section__title">班级：{{ className }}</h1>
+                </div>
+                <div class="section__body">
+                    该班级下有{{ udocs.length }}个用户
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="medium-12 columns">
+            <div class="section">
+                <div class="section__body no-padding">
+                    <div>
+                        {% if not udocs.length %}
+                            {{ nothing.render('该班级还没有人加入哦！') }}
+                        {% else %}
+                            <table class="data-table">
+                                <colgroup>
+                                    <col class="col--rank">
+                                    <col class="col--stuid">
+                                    <col class="col--user">
+                                    <col class="col--gender">
+                                    <col class="col--rp">
+                                    <col class="col--ac">
+                                    <col class="col--lastactive">
+                                    <col class="col--bio">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th class="col--rank">{{ _('Rank') }}</th>
+                                        <th class="col--stuid">{{ _('Stu_ID') }}</th>
+                                        <th class="col--user">{{ _('Username') }}</th>
+                                        <th class="col--gender">{{ _('Gender') }}</th>
+                                        <th class="col--rp">{{ _('RP') }}</th>
+                                        <th class="col--ac">AC数量</th>
+                                        <th class="col--lastactive">{{ _('last active at') }}</th>
+                                        <th class="col--bio">{{ _('Bio') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {%- for udoc in udocs -%}
+                                        <tr>
+                                            <td class="col--rank">{{ loop.index }}</td>
+                                            <td class="col--stuid">{{ udoc['stuid'] }}</td>
+                                            <td class="col--user">{{ user.render_inline(udoc,classname=false) }}</td>
+                                            <td class="col--gender">{{ model.builtin.USER_GENDER_ICONS[udoc.gender] }}</td>
+                                            <td class="col--rp">{{ udoc.rp|default(1500)|round(0) }}</td>
+                                            <td class="col--ac">{{ udoc['nAccept'] }}</td>
+                                            <td class="col--lastactive">
+                                            {% if sdocs[udoc['_id']] %}
+                                            {{ datetimeSpan(sdocs[udoc['_id']])|safe }}
+                                            {% else %}
+                                            {{ datetimeSpan(udoc['loginat'])|safe }}
+                                            {% endif %}
+                                            </td>
+                                            <td class="col--bio">{{ udoc.bio|default('')|truncate(64, true)|markdownInline|safe }}</td>
+                                        </tr>
+                                    {%- endfor -%}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}

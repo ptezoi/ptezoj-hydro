@@ -1,0 +1,38 @@
+.page--stu_class_list
+  .stu-classlist td
+    height: rem(50px)
+    font-size: 14px
+
+  .stu-classlist>tr:nth-child(-n+3) .col--rank
+    height: rem(80px)
+    font-size: 26px
+    font-weight: 200
+
+  .col--rank
+    width: rem(100px)
+    position: relative
+
+  .col--classname
+    min-width: rem(200px)
+    text-align: left
+
+  .col--stunum, .col--ac, .col--submit, .col--rpavg, .col--rpsum, .col--activity, .col--weight
+    min-width: rem(100px)
+    text-align: right
+
+  .col--user-rank
+    width: rem(60px)
+
+  .col--user-ac, .col--user-ac, .col--user-submit, .col--user-rp
+    width: rem(60px)
+    text-align: right
+
+  .col--user-bio
+    min-width: rem(400px)
+
+  .col--user
+    width: rem(160px)
+
+  +mobile()
+    .col--rpavg, .col--rpsum, .col--weight, .col--rpavg, .col--submit, .stu-starclass
+      display: none
