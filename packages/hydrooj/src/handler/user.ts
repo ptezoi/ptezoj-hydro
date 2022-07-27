@@ -461,7 +461,7 @@ class StudentClassHandler extends Handler {
         const udocs = await student.getUserListByClassName(domainId, cls);
         udocs.sort((a, b) => a.stuid - b.stuid);
         const sdocs_temp = await Promise.all(udocs.map(async ({ _id }) => {
-            const { updateAt } = await token.getMostRecentSessionByUid(_id) || { updateAt: null };
+            const { updateAt } = await token.getMostRecentSessionByUid(_id, ['createAt', 'updateAt']) || { updateAt: null };
             return { _id, updateAt };
         }));
         const sdocs = {};

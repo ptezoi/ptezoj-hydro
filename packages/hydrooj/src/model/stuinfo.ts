@@ -144,7 +144,7 @@ class StudentModel {
             if (cache.has(`activity/${cls._id}`)) activityList = cache.get(`activity/${cls._id}`);
             else {
                 activityList = await Promise.all(users.map(async (uid) => (
-                    await TokenModel.getMostRecentSessionByUid(uid))?.updateAt.valueOf()
+                    await TokenModel.getMostRecentSessionByUid(uid, ['createAt', 'updateAt']))?.updateAt.valueOf()
                     || (await UserModel.getById(domain, uid))?.loginat.valueOf()
                     || Date.now() - 7 * 24 * 60 * 60 * 1000));
                 activityList = activityList.map((ac) => Math.max(ac, Date.now() - 7 * 24 * 60 * 60 * 1000));

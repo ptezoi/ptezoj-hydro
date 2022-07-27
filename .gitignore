@@ -6,6 +6,7 @@ dist/
 /build/*.js
 .cache/
 *.log
+*.log.gz
 *.d.ts
 *.js.map
 *.tsbuildinfo
