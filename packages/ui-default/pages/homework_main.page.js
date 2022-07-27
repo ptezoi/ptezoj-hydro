@@ -17,17 +17,16 @@ const page = new NamedPage('homework_main', () => {
     }));
     const calendar = new Calendar(events);
     calendar.getDom().appendTo('[name="calendar_entry"]');
-    $('.homework__list').show();
     $('[name="calendar_entry"]').hide();
     $('[name="homework_display"]').change((ev) => {
       switch (ev.currentTarget.value) {
-        case 'list':
-          $('.homework__list').show();
-          $('[name="calendar_entry"]').hide();
-          break;
         case 'calendar':
           $('.homework__list').hide();
           $('[name="calendar_entry"]').show();
+          break;
+        case 'list':
+          $('.homework__list').show();
+          $('[name="calendar_entry"]').hide();
           break;
         default:
           throw new Error('Unexpected display parameter');
