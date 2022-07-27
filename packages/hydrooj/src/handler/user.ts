@@ -314,7 +314,7 @@ class UserDetailHandler extends Handler {
         const isSelfProfile = this.user._id === uid;
         const [udoc, sdoc, union] = await Promise.all([
             user.getById(domainId, uid),
-            token.getMostRecentSessionByUid(uid),
+            token.getMostRecentSessionByUid(uid, ['createAt', 'updateAt']),
             domain.getUnion(domainId),
         ]);
         if (!udoc) throw new UserNotFoundError(uid);
@@ -339,12 +339,6 @@ class UserDetailHandler extends Handler {
             }
         }
         const tags = Object.entries(acInfo).sort((a, b) => b[1] - a[1]).slice(0, 20);
-        // Remove sensitive data
-        if (!isSelfProfile && sdoc) {
-            sdoc.createIp = '';
-            sdoc.updateIp = '';
-            sdoc._id = '';
-        }
         const studoc = await student.getStuInfoById(uid);
         this.response.template = 'user_detail.html';
         this.response.body = {
@@ -483,7 +477,7 @@ class StudentClassHandler extends Handler {
 }
 class ClassHandler extends Handler {
     async get(domainId: string) {
-        const cls: { clsList:any[] } = await student.getClassList();
+        const cls: { clsList: any[] } = await student.getClassList();
         const starStudents: any[] = await Promise.all(
             cls.clsList.slice(0, 2).map(async ({ _id }) => ({ _id, students: await student.getUserListByClassNameOrdered(domainId, _id, 3) })),
         );
