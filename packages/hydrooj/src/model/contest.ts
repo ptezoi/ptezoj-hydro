@@ -352,9 +352,9 @@ const homework = buildContestRule({
         const udict = await user.getList(tdoc.domainId, uids);
         const columns: ScoreboardNode[] = [
             { type: 'rank', value: _('Rank') },
-            { type: 'user', value: _('User') },
             { type: 'stu_class', value: _('Stu_Class') },
-            { type: 'stu_name', value: _('Stu_Name') },
+            { type: 'user', value: _('User') },
+            // { type: 'stu_name', value: _('Stu_Name') },
             // { type: 'stu_stuid', value: _('Stu_Stuid') },
             { type: 'total_score', value: _('Score') },
         ];
@@ -396,18 +396,18 @@ const homework = buildContestRule({
             const row: ScoreboardRow = [
                 { type: 'string', value: rank },
                 {
-                    type: 'user',
-                    value: udict[tsdoc.uid].uname,
-                    raw: tsdoc.uid,
-                },
-                {
                     type: 'string',
                     value: udict[tsdoc.uid].class || '',
                 },
                 {
-                    type: 'string',
-                    value: udict[tsdoc.uid].name || '',
+                    type: 'user',
+                    value: udict[tsdoc.uid].uname,
+                    raw: tsdoc.uid,
                 },
+                // {
+                //     type: 'string',
+                //     value: udict[tsdoc.uid].name || '',
+                // },
                 // {
                 //     type: 'string',
                 //     value: udict[tsdoc.uid].stuid || '',

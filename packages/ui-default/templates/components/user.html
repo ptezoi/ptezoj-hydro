@@ -4,13 +4,28 @@
   {% if avatar %}
     <img class="small user-profile-avatar v-center" loading="lazy" src="{{ avatarUrl(udoc.avatar|default('')) }}" width="20" height="20">
   {% endif %}
-  <a class="user-profile-name" href="{{ url('user_detail', uid=udoc._id) }}">
-    {% if udoc.displayName and udoc.displayName != udoc.uname %}
-      {{ udoc.displayName }} ({{ udoc.uname }})
+  {% if classname %}
+    {% if udoc.class %}
+      <a href="{{ url('student_class', cls=udoc.class) }}" data-tooltip="专业班级：{{ udoc.class }}">
+        <span class="text-badge">{{ udoc.class }}</span>
+      </a>
     {% else %}
-      {{ udoc.uname }}
+      <span class="text-badge" data-tooltip="该用户未填写班级信息">未完善</span>
     {% endif %}
-  </a>
+  {% endif %}
+  {% if udoc.name %}
+    <a class="user-profile-name" href="{{ url('user_detail', uid=udoc._id) }}">
+      <span>{{ udoc.name }}</span>
+    </a>
+  {% else %}
+    <a class="user-profile-name" href="{{ url('user_detail', uid=udoc._id) }}">
+      {% if udoc.displayName and udoc.displayName != udoc.uname %}
+        {{ udoc.displayName }} ({{ udoc.uname }})
+      {% else %}
+        {{ udoc.uname }}
+      {% endif %}
+    </a>
+  {% endif %}
   {% if badge %}
     {% if udoc.badge %}
       {% set _badge = udoc.badge.split('#') %}

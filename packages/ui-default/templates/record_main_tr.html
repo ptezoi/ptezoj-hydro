@@ -1,5 +1,6 @@
 {% import "components/record.html" as record with context %}
 {% import "components/problem.html" as problem with context %}
+{% import "components/user.html" as user with context %}
 <tr data-rid="{{ rdoc['_id'] }}">
   {{ record.render_status_td(rdoc, allDomain = all) }}
   <td class="col--problem col--problem-name">
@@ -24,11 +25,7 @@
   </td>
   <td class="col--submit-by">
     <a href="{{ url('user_detail', uid=rdoc.uid) }}">
-      {% if udoc.displayName %}
-        {{ udoc.displayName }} ({{ udoc.uname }})
-      {% else %}
-        {{ udoc.uname }}
-      {% endif %}
+      {{ user.render_inline(udoc,badge=false,avatar=false) }}
     </a>
   </td>
   <td class="col--time">{% if rdoc['status'] == STATUS.STATUS_TIME_LIMIT_EXCEEDED or rdoc['status'] == STATUS.STATUS_MEMORY_LIMIT_EXCEEDED or rdoc['status'] == STATUS.STATUS_OUTPUT_LIMIT_EXCEEDED %}&ge;{% endif %}{{ rdoc.time|round|int }}ms</td>
