@@ -1,0 +1,28 @@
+{% import "components/nothing.html" as nothing with context %}
+{% import "components/user.html" as user with context %}
+{% import "components/paginator.html" as paginator with context %}
+{% if not ddocs.length %}
+  {{ nothing.render('no discussion yet...') }}
+{% else %}
+  <ol class="section__list discussion__list">
+  {%- for ddoc in ddocs -%}
+    <li class="section__list__item discussion__item">
+      <div class="media">
+        <div class="media__body top">
+          <h1 class="discussion__title"><a href="{{ url('discussion_detail', did=ddoc._id, anchor=ddoc.updateAt.getTime()) }}" data-emoji-enabled>{{ ddoc['title'] }}</a></h1>
+          <ul class="supplementary list">
+            <li>
+              {{ user.render_inline(udict[ddoc.owner], avatar=false, badge=false, classname=false) }}
+              @
+              {{ datetimeSpan(ddoc.updateAt)|safe }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </li>
+  {%- endfor -%}
+  </ol>
+  {% if page != undefined and dpcount != undefined %}
+  {{ paginator.render(page, dpcount) }}
+  {% endif %}
+{% endif %}

@@ -31,7 +31,7 @@
             </li>
             <!-- <li>{{ _('{0} views').format(ddoc.views) }}</li> -->
             <li>
-              {{ user.render_inline(udict[ddoc.owner], badge=false) }}
+              {{ user.render_inline(udict[ddoc.owner], badge=true, classname=false) }}
               @
               {{ datetimeSpan(ddoc.updateAt)|safe }}
             </li>
