@@ -14,9 +14,9 @@ import { ArgMethod } from '../utils';
 import { PERM, PRIV } from './builtin';
 import domain from './domain';
 import * as setting from './setting';
+import StudentModel from './stuinfo';
 import * as system from './system';
 import token from './token';
-import StudentModel from './stuinfo';
 
 export const coll: Collection<Udoc> = db.collection('user');
 // Virtual user, only for display in contest.
