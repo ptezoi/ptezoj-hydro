@@ -20,7 +20,7 @@
           </li>
           <li><h2>{{ ddoc.title }}</h2></li>
           <li>
-            {{ user.render_inline(udict[ddoc.owner]) }}
+            {{ user.render_inline(udict[ddoc.owner], classname=false) }}
             @
             {{ datetimeSpan(ddoc._id)|safe }}
           </li>
@@ -118,7 +118,7 @@
             <img src="{{ avatarUrl(udoc.avatar, 80) }}" width="80" height="80" class="medium user-profile-avatar">
           </div>
           <div class="media__body">
-            <p>{{ user.render_inline(udoc, avatar=false, modbadge=false) }}</p>
+            <p>{{ user.render_inline(udoc, avatar=false, modbadge=false, classname=false) }}</p>
           </div>
         </div>
       </div>
