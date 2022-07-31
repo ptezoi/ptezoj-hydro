@@ -62,9 +62,9 @@
           {% endif %}
           <span class="bp4-tag bp4-large bp4-minimal bp4-interactive problem__tag-item">{{ _('Uploaded By') }}: {{ user.render_inline(udoc, badge=false) }}</span>
           {% if pdoc.tag.length %}
-            <span name="show_tags" class="bp4-tag bp4-large bp4-minimal bp4-interactive problem__tag-item nojs--hide icon icon-tag">{{ _('Tags') + '>' }}</span>
+            <span class="bp4-tag bp4-large bp4-minimal problem__tag-item nojs--hide icon icon-tag">{{ _('Tags') + '>' }}</span> <!-- name="show_tags" class="bp4-interactive"-->
             {%- for tag in pdoc.tag -%}
-              <span class="bp4-tag bp4-large bp4-minimal problem__tag-item tags hasjs--hide">{{ tag }}</span>
+              <span class="bp4-tag bp4-large bp4-minimal problem__tag-item tags nojs--hide">{{ tag }}</span>
             {%- endfor -%}
           {% endif %}
         </ul>
