@@ -87,7 +87,7 @@ export class User {
         this.priv = udoc.priv;
         this.regat = udoc.regat;
         this.loginat = udoc.loginat;
-        this.perm = dudoc.perm;
+        this.perm = dudoc.perm || 0n; // This is a fallback for unknown user
         this.scope = typeof scope === 'string' ? BigInt(scope) : scope;
         this.role = dudoc.role || 'default';
         this.tfa = !!udoc.tfa;
@@ -243,7 +243,7 @@ class UserModel {
         if (op.$set?.loginip) op.$addToSet = { ip: op.$set.loginip };
         // HGNUOJ
         const stuinfo = ['stuid', 'name', 'class'];
-        const studoc = { };
+        const studoc = {};
         stuinfo.forEach((element) => {
             if (op.$set[element]) {
                 studoc[element] = op.$set[element];
