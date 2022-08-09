@@ -146,6 +146,7 @@ env.addGlobal('process', process);
 env.addGlobal('global', global);
 env.addGlobal('typeof', (o) => typeof o);
 env.addGlobal('paginate', misc.paginate);
+env.addGlobal('instanceof', (a, b) => a instanceof b);
 env.addGlobal('size', misc.size);
 env.addGlobal('utils', { status });
 env.addGlobal('avatarUrl', avatar);
