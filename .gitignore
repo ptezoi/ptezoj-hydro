@@ -54,3 +54,4 @@ __*
 !.gitkeep
 *.local
 packages/vjudge/src/providers/hduoj.ts
+ceshi.sh
