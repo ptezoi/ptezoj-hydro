@@ -4,12 +4,11 @@ set -eo pipefail
 TESTS_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 export TESTS_DIR="$TESTS_DIR"
 
-export RED='\033[0;31m'
-export CYAN='\033[1;36m'
-export BLUE='\033[1;34m'
-export YELLOW='\033[1;33m'
-export GREEN='\033[1;32m'
-export NC='\033[0m'
+CYAN='\033[1;36m'
+BLUE='\033[1;34m'
+YELLOW='\033[1;33m'
+GREEN='\033[1;32m'
+NC='\033[0m'
 
 ARGS_CPP=""
 ARGS_VALID_CPP_STANDARDS=",11,14,17,20,23,"
@@ -116,7 +115,7 @@ run_tests() {
   export CPP="$1"
   export CPP_STANDARD="$2"
 
-  echo -e Running tests \("${CYAN}""$CPP"@"$CPP_STANDARD""${NC}"\)
+  echo -e Running tests \(${CYAN}"$CPP"@"$CPP_STANDARD"${NC}\)
   echo ""
 
   for test_dir in "$TESTS_DIR"/*/; do
@@ -132,7 +131,7 @@ run_tests() {
         fi
         pushd "$test_dir" 1>/dev/null 2>&1
         bash "${test_dir}run.sh"
-        echo -e Done "${BLUE}$test${NC}" \("${CYAN}""$CPP"@"$CPP_STANDARD""${NC}"\)
+        echo -e Done "${BLUE}$test${NC}" \(${CYAN}"$CPP"@"$CPP_STANDARD"${NC}\)
         echo ""
         popd 1>&2 1>/dev/null 2>&1
       fi
@@ -140,7 +139,7 @@ run_tests() {
   done
 
   rm -rf "$TESTS_DIR"/tester-lcmp
-  echo -e Done all tests \("${CYAN}""$CPP"@"$CPP_STANDARD""${NC}"\)
+  echo -e Done all tests \(${CYAN}"$CPP"@"$CPP_STANDARD"${NC}\)
   echo ""
 }
 
@@ -194,28 +193,6 @@ if [[ "$machine" == "Windows" && ("$ARGS_CPP" == "" || "$ARGS_CPP" == "msvc") ]]
   done
 fi
 
-# Find /c/Programs/*/bin/g++ in case of Windows and no ARGS_CPP
-if [[ "$MACHINE" == "Windows" && "$ARGS_CPP" == "" ]]; then
-    for d in /c/Programs/*/ ; do
-        gpp="${d}bin/g++.exe"
-        gpp_output=$($gpp 2>&1 || true)
-        if [[ $gpp_output == *"no input files"* ]]; then
-          for gpp_standard in "${CPP_STANDARDS[@]}"; do
-            touch empty_file.cpp
-            gpp_output=$($gpp "$gpp_standard" empty_file.cpp 2>&1 || true)
-            if [[ ! $gpp_output == *"unrecognized"* && ! $gpp_output == *"standard"* ]]; then
-              run_tests "$gpp" "$gpp_standard"
-              if [[ ! "$done" == "" ]]; then
-                done="$done, "
-              fi
-              done="$done$gpp@$gpp_standard"
-            fi
-            rm -f empty_file.*
-          done
-        fi
-    done
-fi
-
 for compiler in "${COMPILERS[@]}"; do
   for version in 0 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
     if [[ "$ARGS_CPP_VERSIONS" == "," || "$ARGS_CPP_VERSIONS" == *,$version,* ]]; then
@@ -254,7 +231,7 @@ if [[ "$machine" == "Windows" ]]; then
 fi
 
 if [[ -z "$done" ]]; then
-  echo -e "${RED}[ERROR]${NC} No compilers found\n"
+  echo "[ERROR] No compilers found"
   exit 1
 fi
 

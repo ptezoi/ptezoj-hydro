@@ -33,23 +33,4 @@ TEST(instream) {
             ensure(result == "100500");
         }
     }
-    {
-        InStream s(inf, "\xEF\xBB\xBF" "content");
-        s.skipBom();
-        ensure(s.readWord() == "content");
-        ensure(s.eof());
-    }
-    {
-        InStream s(inf, "content");
-        s.skipBom();
-        ensure(s.readWord() == "content");
-        ensure(s.eof());
-    }
-    {
-        InStream s(inf, "\xEF" "content");
-        s.skipBom();
-        ensure(s.readChar() == '\xEF');
-        ensure(s.readWord() == "content");
-        ensure(s.eof());
-    }
 }

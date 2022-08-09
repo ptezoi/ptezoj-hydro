@@ -1,9 +1,6 @@
 #!/bin/bash
 set -eo pipefail
 
-FAILED_TXT="${RED}[FAILED]${NC}"
-SUCCESS_TXT="${GREEN}[SUCCESS]${NC}"
-
 # Check $TESTS_DIR is given
 if [[ -z "$TESTS_DIR" ]]; then
   echo "Must provide \$TESTS_DIR env variable"
@@ -65,7 +62,7 @@ if [ ! -d "$refs" ]; then
   # shellcheck disable=SC2048
   $* 1>"$refs"/stdout 2>"$refs"/stderr || exit_code=$?
   echo $exit_code >"$refs"/exit_code
-  echo -e "${SUCCESS_TXT} generated execution reference files (exit code: $exit_code)\n"
+  echo "[SUCCESS] generated execution reference files (exit code: $exit_code)"
 else
   # Do invocation
   echo Testing refs: "$*"
@@ -78,7 +75,7 @@ else
   tester_lcmp_exit_code=0
   "$TESTS_DIR"/tester-lcmp/tester-lcmp "$TESTS_DIR"/tester-lcmp/tester-lcmp."$INVOCATION_ID" "$refs"/exit_code.aux "$refs"/exit_code 2>tester-lcmp.out || tester_lcmp_exit_code=$?
   if [[ ! "$tester_lcmp_exit_code" == "0" ]]; then
-    echo -e "${FAILED_TXT} exit_code mismatched: found $(cat < "$refs"/exit_code.aux) but expected $(cat "$refs"/exit_code)\n"
+    echo "[FAILED] exit_code mismatched"
     cat tester-lcmp.out
     rm -f tester-lcmp.out
     rm -f "$refs"/*.aux
@@ -89,7 +86,7 @@ else
   # Check stdout is the same
   "$TESTS_DIR"/tester-lcmp/tester-lcmp "$TESTS_DIR"/tester-lcmp/tester-lcmp."$INVOCATION_ID" "$refs"/stdout.aux "$refs"/stdout 2>tester-lcmp.out || tester_lcmp_exit_code=$?
   if [[ ! "$tester_lcmp_exit_code" == "0" ]]; then
-    echo -e "${FAILED_TXT} stdout mismatched\n"
+    echo "[FAILED] stdout mismatched"
     cat tester-lcmp.out
     rm -f tester-lcmp.out
     rm -f "$refs"/*.aux
@@ -99,7 +96,7 @@ else
   # Check stderr is the same
   "$TESTS_DIR"/tester-lcmp/tester-lcmp "$TESTS_DIR"/tester-lcmp/tester-lcmp."$INVOCATION_ID" "$refs"/stderr.aux "$refs"/stderr 2>tester-lcmp.out || tester_lcmp_exit_code=$?
   if [[ ! "$tester_lcmp_exit_code" == "0" ]]; then
-    echo -e "${FAILED_TXT} stderr mismatched\n"
+    echo "[FAILED] stderr mismatched"
     cat tester-lcmp.out
     rm -f tester-lcmp.out
     rm -f "$refs"/*.aux
@@ -107,7 +104,7 @@ else
   fi
 
   # Invocation is the same!
-  echo -e "${SUCCESS_TXT} execution matched with reference (exit code: $exit_code)\n"
+  echo "[SUCCESS] execution matched with reference (exit code: $exit_code)"
   rm -f tester-lcmp.out
   rm -f "$refs"/*.aux
 fi
