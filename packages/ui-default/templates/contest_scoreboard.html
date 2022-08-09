@@ -49,7 +49,7 @@
               <td class="col--{{ rows[0][loop.index0]['type'] }}"{% if column.style %} style="{{ column.style }}"{% endif %}>
               {% if column.type == 'user' %}
                 {% set canView = canViewAll or handler.user._id == column.raw %}
-                {{ user.render_inline(udict[column.raw], badge=false, classname=false) }}
+                {{ user.render_inline(udict[column.raw],avatar=false, badge=false, classname=false) }}
               {% elif column.type == 'record' and column.raw %}
                 <a href="{{ url('record_detail', rid=column.raw) if canView else '' }}" data-tooltip="{{ column.hover }}">
                   <span style="font-weight:bold;color:{{ utils.status.getScoreColor(column.score|default(column.value)) }}">{{ column.value|string|nl2br|safe }}</span>
