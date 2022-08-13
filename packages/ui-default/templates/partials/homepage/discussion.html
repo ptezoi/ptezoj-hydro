@@ -1,9 +1,9 @@
 {% set ddocs = payload[0] %}
 {% set vndict = payload[1] %}
 {% if ddocs.length %}
-  <div class="section page--discussion_main">
+  <div class="section side nojs--hide">
     <div class="section__header">
-      <h1 class="section__title">{{ _('Discussion') }}</h1>
+      <h1 class="section__title">{{ _('Recent Discussion') }}</h1>
     </div>
     {% include "partials/discussion_list_main.html" %}
   </div>
