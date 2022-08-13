@@ -28,6 +28,12 @@ import {
     Connection, ConnectionHandler, Handler, param, query, Route, Types,
 } from '../service/server';
 
+bus.on('handler/after', (that) => {
+    that.ctx.set('Access-Control-Allow-Origin', '*');
+    that.ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    that.ctx.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+});
+
 const { geoip, useragent } = global.Hydro.lib;
 
 export class HomeHandler extends Handler {
