@@ -28,12 +28,6 @@ import {
     Connection, ConnectionHandler, Handler, param, query, Route, Types,
 } from '../service/server';
 
-bus.on('handler/after', (that) => {
-    that.ctx.set('Access-Control-Allow-Origin', '*');
-    that.ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    that.ctx.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-});
-
 const { geoip, useragent } = global.Hydro.lib;
 
 export class HomeHandler extends Handler {
@@ -79,7 +73,7 @@ export class HomeHandler extends Handler {
         const ddocs = await discussion.getMulti(domainId).sort({ _id: -1 }).limit(limit).toArray();
         const vndict = await discussion.getListVnodes(domainId, ddocs, this.user.hasPerm(PERM.PERM_VIEW_PROBLEM_HIDDEN), this.user.group);
         this.collectUser(ddocs.map((ddoc) => ddoc.owner));
-        return [[ddocs[0]], vndict];
+        return [ddocs, vndict];
     }
 
     async getRanking(domainId: string, limit = 50) {
