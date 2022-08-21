@@ -422,9 +422,10 @@ export function Connection(
                 };
             }
             conn.onclose = () => {
-                h.cleanup?.(args);
                 bus.emit('connection/close', h);
+                h.cleanup?.(args);
             };
+            bus.emit('connection/active', h);
         } catch (e) {
             await h.onerror(e);
         }
