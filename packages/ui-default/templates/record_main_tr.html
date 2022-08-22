@@ -25,9 +25,6 @@
   </td>
   <td class="col--submit-by">
     <a href="{{ url('user_detail', uid=rdoc.uid) }}">
-      {% if handler.user.hasPerm(perm.PREM_VIEW_DISPLAYNAME) and udoc.displayName %}
-        {{ udoc.displayName }} ({{ user.render_inline(udoc,badge=false,avatar=false) }})
-      {% else %}
         {{ user.render_inline(udoc,badge=false,avatar=false) }}
     </a>
   </td>
