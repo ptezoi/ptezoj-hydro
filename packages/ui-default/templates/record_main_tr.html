@@ -15,7 +15,11 @@
     </form>
   {% endif %}
   {% if pdoc and rdoc.contest %}
-    {{ problem.render_problem_title(pdoc, tdoc=tdoc, show_tags=false, show_invisible_flag=false) }}
+    {% if not rdoc.contest.attend and (handler.user.own(tdoc) or handler.user.hasPerm(perm.PERM_VIEW_CONTEST_HIDDEN_SCOREBOARD)) %}
+      {{ problem.render_problem_title(pdoc, show_tags=false, show_invisible_flag=false) }}
+    {% else %}
+      {{ problem.render_problem_title(pdoc, tdoc=tdoc, show_tags=false, show_invisible_flag=false) }}
+    {% endif %}
   {% elif pdoc and (not pdoc.hidden or handler.user.hasPerm(perm.PERM_VIEW_PROBLEM_HIDDEN) or handler.user.own(pdoc)) %}
     {{ problem.render_problem_title(pdoc, show_tags=false) }}
   {% else %}
