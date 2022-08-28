@@ -90,18 +90,6 @@
       <div class="profile-content">
         <div class="section__tab-container immersive">
           <ul class="section__tabs">
-            <li class="section__tab-item">
-              <h1 class="section__tab-title">{{ _('Bio') }}</h1>
-              <div class="section__tab-main">
-              {% if not udoc.bio %}
-                {{ nothing.render("This person is lazy and didn't wrote anything.") }}
-              {% else %}
-                <div class="section__body typo">
-                  {{ udoc.bio|default('')|markdown|safe }}
-                </div>
-              {% endif %}
-              </div>
-            </li>
             {% if pdocs.length %}
               <li class="section__tab-item">
                 <h1 class="section__tab-title">{{ _('Accepted Problems') }}</h1>

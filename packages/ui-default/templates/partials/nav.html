@@ -37,11 +37,6 @@
               <span class="icon icon-account--circle"></span> {{ _('My Profile') }}
             </a>
           </li>
-          <li class="menu__item">
-            <a href="{{ url('home_messages') }}" class="menu__link">
-              <span class="icon icon-comment--multiple"></span> {{ _('home_messages') }}
-            </a>
-          </li>
           <li class="menu__seperator"></li>
           <li class="menu__item">
             <a href="{{ url('home_settings', category='domain') }}" class="menu__link">
@@ -77,7 +72,7 @@
               </a>
             </li>
           {% endif %}
-          {% if handler.user.hasPriv(PRIV.PRIV_USER_PROFILE) and model.system.get('server.blog') %}
+          {% if handler.user.hasPerm(perm.PERM_DELETE_DISCUSSION) and model.system.get('server.blog') %}
             <li class="menu__item">
               <a href="{{ url('blog_main', uid=handler.user._id) }}" class="menu__link">
                 <span class="icon icon-book"></span> {{ _('Blog') }}

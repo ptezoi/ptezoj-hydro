@@ -21,7 +21,6 @@
                 {% endif %}
               {% endfor %}
               <col class="col--ac">
-              <col class="col--bio">
             </colgroup>
             <thead>
               <tr>
@@ -34,7 +33,6 @@
                   {% endif %}
                 {% endfor %}
                 <th class="col--ac">{{ _('Accept') }}</th>
-                <th class="col--bio">{{ _('Bio') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -49,7 +47,6 @@
                   {% endif %}
                 {% endfor %}
                 <td class="col--ac">{{ handler.user.nAccept|default(0) }}</td>
-                <td class="col--bio">{{ handler.user.bio|default('')|truncate(64, true)|markdownInline|safe }}</td>
               </tr>
               {% endif %}
               {%- for udoc in udocs -%}
@@ -63,7 +60,6 @@
                   {% endif %}
                 {% endfor %}
                 <td class="col--ac">{{ udoc.nAccept|default(0) }}</td>
-                <td class="col--bio">{{ udoc.bio|default('')|truncate(64, true)|markdownInline|safe }}</td>
               </tr>
               {%- endfor -%}
             </tbody>
