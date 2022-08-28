@@ -6,7 +6,6 @@ import Compress from 'koa-compress';
 import proxy from 'koa-proxies';
 import cache from 'koa-static-cache';
 import { filter } from 'lodash';
-import tx2 from 'tx2';
 import WebSocket from 'ws';
 import { parseMemoryMB } from '@hydrooj/utils/lib/utils';
 import {
@@ -87,11 +86,6 @@ export interface KoaContext extends Koa.Context {
 
 const argv = cac().parse();
 const logger = new Logger('server');
-const reqCount = tx2.meter({
-    name: 'req/sec',
-    samples: 1,
-    timeframe: 60,
-});
 export const app = new Koa<Koa.DefaultState, KoaContext>({
     keys: system.get('server.keys'),
 });
@@ -276,7 +270,6 @@ async function bail(name: string, ...args: any[]) {
 }
 
 async function handle(ctx: KoaContext, HandlerClass, checker) {
-    reqCount.mark();
     const {
         args, request, response, user, domain, UiContext,
     } = ctx.HydroContext;
