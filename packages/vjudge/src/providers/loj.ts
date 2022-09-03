@@ -1,12 +1,11 @@
 /* eslint-disable no-await-in-loop */
-import charset from 'superagent-charset';
+import { filter } from 'lodash';
+import * as superagent from 'superagent';
 import proxy from 'superagent-proxy';
 import { STATUS } from '@hydrooj/utils/lib/status';
 import { Logger } from 'hydrooj/src/logger';
 import { IBasicProvider, RemoteAccount } from '../interface';
-const charset = require('superagent-charset');
-const superagent = charset(require('superagent'));
-charset(superagent);
+
 proxy(superagent as any);
 const logger = new Logger('remote/loj');
 
@@ -22,7 +21,11 @@ export default class LOJProvider implements IBasicProvider {
     }
 
     post(url: string) {
-        return url;
+        logger.debug('post', url, this.cookie);
+        if (!url.includes('//')) url = `${this.account.endpoint || 'https://api.loj.ac.cn'}${url}`;
+        const req = superagent.post(url).set('Cookie', this.cookie).type('form');
+        if (this.account.proxy) return req.proxy(this.account.proxy);
+        return req;
     }
 
     async getCsrfToken(url: string) {
@@ -35,16 +38,58 @@ export default class LOJProvider implements IBasicProvider {
 
     async getProblem(id: string) {
         logger.info(id);
+        const result = await this.post('/api/problem/getProblem')
+            .send({
+                displayId: id,
+                localizedContentsOfAllLocales: true,
+                tagsOfLocale: 'zh_CN',
+                samples: true,
+                judgeInfo: true,
+                testData: true,
+                additionalFiles: true,
+            });
+        if (!result.body.localizedContentsOfAllLocales) {
+            return null;
+        }
+        let content = '';
+        for (const c of result.body.localizedContentsOfAllLocales) {
+            const sections = c.contentSections;
+            for (const section of sections) {
+                if (section.type === 'Sample') {
+                    content += `\
+\`\`\`input${section.sampleId}
+${result.body.samples[section.sampleId].inputData}
+\`\`\`
+\`\`\`output${section.sampleId}
+${result.body.samples[section.sampleId].outputData}
+\`\`\`
+`;
+                } else {
+                    content += `## ${section.sectionTitle}\n`;
+                    content += `\n${section.text}\n\n`;
+                }
+            }
+            let locale = c.locale;
+            if (locale === 'en_US') locale = 'en';
+            else if (locale === 'zh_CN') locale = 'zh';
+        }
+        const tags = result.body.tagsOfLocale.map((node) => node.name);
+        const title = [
+            ...filter(
+                result.body.localizedContentsOfAllLocales,
+                (node) => node.locale === 'zh_CN',
+            ),
+            ...result.body.localizedContentsOfAllLocales,
+        ][0].title;
         const files = {};
-        const tag = [];
         return {
-            title: '',
+            title,
             data: {
                 'config.yaml': Buffer.from(`target: ${id}`),
             },
             files,
-            tag,
-            content: JSON.stringify(''),
+            tag: tags,
+            content: JSON.stringify(content),
         };
     }
 
