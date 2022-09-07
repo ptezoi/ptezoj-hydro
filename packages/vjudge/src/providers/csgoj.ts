@@ -24,6 +24,7 @@ const statusDict = {
     10: STATUS.STATUS_RUNTIME_ERROR,
     11: STATUS.STATUS_COMPILE_ERROR,
 };
+const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0';
 
 /* langs
 csgoj:
@@ -65,7 +66,7 @@ export default class CSGOJProvider implements IBasicProvider {
         if (!url.includes('//')) url = `${this.account.endpoint || 'https://cpc.csgrandeur.cn'}${url}`;
         const req = superagent.get(url)
             .set('Cookie', this.cookie)
-            .set('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0');
+            .set('User-Agent', userAgent);
         if (this.account.proxy) return req.proxy(this.account.proxy);
         return req;
     }
@@ -76,7 +77,7 @@ export default class CSGOJProvider implements IBasicProvider {
         const req = superagent.post(url)
             .set('Cookie', this.cookie)
             .set('X-Requested-With', 'XMLHttpRequest')
-            .set('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0')
+            .set('User-Agent', userAgent)
             .type('form');
         if (this.account.proxy) return req.proxy(this.account.proxy);
         return req;
@@ -158,10 +159,7 @@ export default class CSGOJProvider implements IBasicProvider {
             .get(`/csgoj/problemset/problemset_ajax?search=&sort=problem_id&order=asc&offset=${offset}&limit=100`)
             .set('referer', 'https://cpc.csgrandeur.cn/csgoj/problemset')
             .set('X-Requested-With', 'XMLHttpRequest');
-        const res = result.body.rows;
-        if (res.length === 0) return [];
-        const pli: string[] = Array.from(res.map((i) => `P${+i.problem_id}`));
-        return pli;
+        return result.body.rows.map((i) => `P${+i.problem_id}`);
     }
 
     async submitProblem(id: string, lang: string, source: string, info, next, end) {
