@@ -189,7 +189,7 @@ export interface ProblemConfig {
     type: string;
     subType?: string;
     target?: string;
-    hackable?:boolean;
+    hackable?: boolean;
 }
 
 export interface PlainContentNode {
@@ -312,6 +312,7 @@ export interface RecordDoc {
 
 export interface JudgeMeta {
     problemOwner: number;
+    hackRejudge?: string;
 }
 
 export interface JudgeRequest extends Omit<RecordDoc, '_id' | 'testCases'> {
