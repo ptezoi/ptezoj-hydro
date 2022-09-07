@@ -1,3 +1,5 @@
+import { JudgeResultBody } from 'hydrooj';
+
 export interface RemoteAccount {
     _id: string;
     type: string;
@@ -9,7 +11,6 @@ export interface RemoteAccount {
     query?: string;
     frozen?: string;
     problemLists?: string[];
-    page: number;
 }
 declare module 'hydrooj/src/interface' {
     interface Collections {
@@ -21,6 +22,7 @@ declare module 'hydrooj/src/interface' {
         mountInfo?: any;
     }
 }
+type NextFunction = (body: Partial<JudgeResultBody>) => void;
 export interface IBasicProvider {
     ensureLogin(): Promise<boolean | string>;
     getProblem(id: string, meta: Record<string, any>): Promise<{
@@ -33,8 +35,8 @@ export interface IBasicProvider {
     }>;
     entryProblemLists?: string[];
     listProblem(page: number, resync: boolean, listId: string): Promise<string[]>;
-    submitProblem(id: string, lang: string, code: string, info: any, next: any, end: any): Promise<string | void>;
-    waitForSubmission(id: string, next: any, end: any): Promise<void>;
+    submitProblem(id: string, lang: string, code: string, info: any, next: NextFunction, end: NextFunction): Promise<string | void>;
+    waitForSubmission(id: string, next: NextFunction, end: NextFunction): Promise<void>;
 }
 
 export interface BasicProvider {
