@@ -549,6 +549,7 @@ export interface JudgeResultBody {
     memory?: number;
     message?: string | JudgeMessage;
     compilerText?: string;
+    nop?: boolean;
 }
 
 export interface Task {
