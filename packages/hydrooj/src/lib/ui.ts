@@ -47,10 +47,10 @@ export const ProblemAdd = (name, args, icon = 'add', text = 'Create Problem') =>
 
 inject('Nav', 'homepage', { prefix: 'homepage' });
 inject('Nav', 'problem_main', { prefix: 'problem' }, PERM.PERM_VIEW_PROBLEM);
-inject('Nav', 'training_main', { prefix: 'training' }, PERM.PERM_VIEW_TRAINING);
+inject('Nav', 'homework_main', { prefix: 'homework' }, PERM.PERM_VIEW_HOMEWORK);
 inject('Nav', 'contest_main', { prefix: 'contest' }, PERM.PERM_VIEW_CONTEST);
 inject('Nav', 'courses', { prefix: 'courses' }, PRIV.PRIV_USER_PROFILE);
-inject('Nav', 'homework_main', { prefix: 'homework' }, PERM.PERM_VIEW_HOMEWORK);
+inject('Nav', 'training_main', { prefix: 'training' }, PERM.PERM_VIEW_TRAINING);
 inject('Nav', 'record_main', {
     prefix: 'record',
     query: (handler) => (handler.user.hasPriv(PRIV.PRIV_USER_PROFILE)
