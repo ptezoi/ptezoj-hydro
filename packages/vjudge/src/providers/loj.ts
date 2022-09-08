@@ -111,7 +111,7 @@ ${result.body.samples[section.sampleId].outputData}
         const memory = 0;
         return await end({
             status,
-            score: status === STATUS.STATUS_ACCEPTED ? 100 : 0,
+            score: 0,
             time,
             memory,
         });
