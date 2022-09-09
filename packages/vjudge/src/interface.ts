@@ -12,6 +12,7 @@ export interface RemoteAccount {
     frozen?: string;
     problemLists?: string[];
     page: number;
+    enableOn?: string[];
 }
 declare module 'hydrooj/src/interface' {
     interface Collections {
