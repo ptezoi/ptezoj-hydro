@@ -155,6 +155,12 @@ export default class POJProvider implements IBasicProvider {
             let markNext = '';
             let html = '';
             for (const node of content.children) {
+                for (const item of node.querySelectorAll('td')) {
+                    const td = page.createElement('td');
+                    td.textContent = item.textContent;
+                    if (item.colSpan > 1) td.colSpan = item.colSpan;
+                    item.replaceWith(td);
+                }
                 if (node.className.includes('pst')) {
                     if (!node.innerHTML.startsWith('Sample ')) {
                         html += `<h2>${htmlEncode(node.innerHTML)}</h2>`;
@@ -169,12 +175,14 @@ export default class POJProvider implements IBasicProvider {
                         markNext = 'output';
                     }
                 } else if (node.className.includes('sio')) {
-                    html += `<pre><code class="language-${markNext}${lastId}">${htmlEncode(node.innerHTML)}</code></pre>`;
+                    html += `\n\n<pre><code class="language-${markNext}${lastId}">${htmlEncode(node.innerHTML)}</code></pre>\n\n`;
                 } else if (node.className.includes('ptx')) {
-                    for (const item of node.innerHTML.split('\n<br>\n<br>')) {
-                        const p = page.createElement('p');
-                        p.innerHTML = item.trim();
-                        html += p.outerHTML;
+                    for (const item of node.innerHTML.split('\n<br>')) {
+                        if (item !== '') {
+                            const p = page.createElement('p');
+                            p.innerHTML = item.trim();
+                            html += p.outerHTML;
+                        }
                     }
                 } else html += node.innerHTML;
             }
