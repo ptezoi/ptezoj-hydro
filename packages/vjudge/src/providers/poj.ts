@@ -155,12 +155,6 @@ export default class POJProvider implements IBasicProvider {
             let markNext = '';
             let html = '';
             for (const node of content.children) {
-                for (const item of node.querySelectorAll('td')) {
-                    const td = page.createElement('td');
-                    td.textContent = item.textContent;
-                    if (item.colSpan > 1) td.colSpan = item.colSpan;
-                    item.replaceWith(td);
-                }
                 if (node.className.includes('pst')) {
                     if (!node.innerHTML.startsWith('Sample ')) {
                         html += `<h2>${htmlEncode(node.innerHTML)}</h2>`;
@@ -175,12 +169,29 @@ export default class POJProvider implements IBasicProvider {
                         markNext = 'output';
                     }
                 } else if (node.className.includes('sio')) {
-                    html += `\n\n<pre><code class="language-${markNext}${lastId}">${htmlEncode(node.innerHTML)}</code></pre>\n\n`;
+                    html += `\n\n<pre><code class="language-${markNext}${lastId}">${node.innerHTML}</code></pre>\n\n`;
                 } else if (node.className.includes('ptx')) {
+                    for (const primaryTd of node.querySelectorAll('td')) {
+                        const td = page.createElement('td');
+                        td.textContent = primaryTd.textContent;
+                        if (primaryTd.colSpan > 1) td.colSpan = primaryTd.colSpan;
+                        primaryTd.replaceWith(td);
+                    }
+                    for (const primaryPre of node.querySelectorAll('pre')) {
+                        const pre = page.createElement('pre');
+                        for (const inner of primaryPre.innerHTML.split('<br>')) {
+                            if (inner !== '') {
+                                const preP = page.createElement('p');
+                                preP.innerHTML = inner;
+                                pre.append(preP);
+                            }
+                        }
+                        primaryPre.replaceWith(pre);
+                    }
                     for (const item of node.innerHTML.split('\n<br>')) {
                         if (item !== '') {
                             const p = page.createElement('p');
-                            p.innerHTML = item.trim();
+                            p.innerHTML = item.trim().replace(/\$/g, '\\$');
                             html += p.outerHTML;
                         }
                     }
