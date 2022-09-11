@@ -79,7 +79,10 @@ export default class KATTISProvider implements IBasicProvider {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async listProblem(page: number, resync = false) {
-        return [];
+        if (resync && page > 1) return [];
+        const res = await this.get(`/problems?page=${page - 1}&language=en`);
+        const { window: { document } } = new JSDOM(res.text);
+        return [...document.querySelector('tbody').children].map((i) => i.children[0].children[0].getAttribute('href').split('/problems/')[1]);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
