@@ -1,4 +1,5 @@
 /* eslint-disable no-await-in-loop */
+import { PassThrough } from 'stream';
 import { JSDOM } from 'jsdom';
 import * as superagent from 'superagent';
 import proxy from 'superagent-proxy';
@@ -64,7 +65,24 @@ export default class KATTISProvider implements IBasicProvider {
 
     async getProblem(id: string) {
         logger.info(id);
+        const res = await this.get(`/problems/${id}`);
+        const { window: { document } } = new JSDOM(res.text);
+        const pDocument = document.querySelector('div[class=problembody]');
+        const images = {};
         const files = {};
+        pDocument.querySelectorAll('img[src]').forEach((ele) => {
+            const src = ele.getAttribute('src');
+            if (images[src]) {
+                ele.setAttribute('src', `file://${images[src]}.png`);
+                return;
+            }
+            const file = new PassThrough();
+            this.get(src).pipe(file);
+            const fid = String.random(8);
+            images[src] = fid;
+            files[`${fid}.png`] = file;
+            ele.setAttribute('src', `file://${fid}.png`);
+        });
         const tag = [];
         return {
             title: '',
