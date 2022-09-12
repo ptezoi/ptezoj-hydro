@@ -68,6 +68,9 @@ export default class KATTISProvider implements IBasicProvider {
         const res = await this.get(`/problems/${id}`);
         const { window: { document } } = new JSDOM(res.text);
         const pDocument = document.querySelector('div[class=problembody]');
+        const limit = document.querySelectorAll('div[class="attribute_list-item"]');
+        const time = `${+limit[0].children[1].innerHTML.split(' ')[0] * 1000}`;
+        const memory = limit[1].children[1].innerHTML.split(' ')[0];
         const images = {};
         const files = {};
         pDocument.querySelectorAll('img[src]').forEach((ele) => {
@@ -83,15 +86,27 @@ export default class KATTISProvider implements IBasicProvider {
             files[`${fid}.png`] = file;
             ele.setAttribute('src', `file://${fid}.png`);
         });
+        let html = '';
+        let lastId = 1;
+        for (const node of pDocument.children) {
+            if (node.className === 'sample') {
+                const inoutSample = node.children[0].children[1];
+                const input = inoutSample.children[0].children[0];
+                html += `\n\n<pre><code class="language-input${lastId}">${input.textContent}</code></pre>\n\n`;
+                const output = inoutSample.children[1].children[0];
+                html += `\n\n<pre><code class="language-output${lastId}">${output.textContent}</code></pre>\n\n`;
+                lastId++;
+            }
+        }
         const tag = [];
         return {
             title: '',
             data: {
-                'config.yaml': Buffer.from(`target: ${id}`),
+                'config.yaml': Buffer.from(`time: ${time}\nmemory: ${memory}\ntype: remote_judge\nsubType: kattis\ntarget: ${id}`),
             },
             files,
             tag,
-            content: JSON.stringify(''),
+            content: JSON.stringify(html),
         };
     }
 
