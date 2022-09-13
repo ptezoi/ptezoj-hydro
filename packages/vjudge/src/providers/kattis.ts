@@ -65,7 +65,7 @@ export default class KATTISProvider implements IBasicProvider {
 
     async getProblem(id: string) {
         logger.info(id);
-        const res = await this.get(`/problems/${id}`);
+        const res = await this.get(`/problems/${id.split('P')[1]}`);
         const { window: { document } } = new JSDOM(res.text);
         const title = document.querySelector('h1[class=book-page-heading]').textContent;
         const pDocument = document.querySelector('div[class=problembody]');
@@ -95,6 +95,7 @@ export default class KATTISProvider implements IBasicProvider {
         let lastId = 1;
         for (const node of pDocument.children) {
             if (node.className === 'sample') {
+                if (node.children[0].children[0].textContent.includes('Interaction')) continue;
                 const inoutSample = node.children[0].children[1];
                 const input = inoutSample.children[0].children[0];
                 html += `\n\n<pre><code class="language-input${lastId}">${input.textContent}</code></pre>\n\n`;
@@ -108,7 +109,7 @@ export default class KATTISProvider implements IBasicProvider {
                 picDescription.innerHTML = node.children[1].textContent.trim();
                 html += pic.outerHTML + picDescription.outerHTML;
             } else {
-                html += node.outerHTML;
+                html += node.outerHTML.replace(/\n\n/g, '\n').replace(/\\begin{equation*}/g, '$').replace(/\\end{equation*}/g, '$');
             }
         }
         return {
@@ -122,12 +123,11 @@ export default class KATTISProvider implements IBasicProvider {
         };
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async listProblem(page: number, resync = false) {
         if (resync && page > 1) return [];
         const res = await this.get(`/problems?page=${page - 1}&language=en`);
         const { window: { document } } = new JSDOM(res.text);
-        return [...document.querySelector('tbody').children].map((i) => i.children[0].children[0].getAttribute('href').split('/problems/')[1]);
+        return [...document.querySelector('tbody').children].map((i) => `P${i.children[0].children[0].getAttribute('href').split('/problems/')[1]}`);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
