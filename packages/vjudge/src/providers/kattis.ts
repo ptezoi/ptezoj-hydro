@@ -67,10 +67,15 @@ export default class KATTISProvider implements IBasicProvider {
         logger.info(id);
         const res = await this.get(`/problems/${id}`);
         const { window: { document } } = new JSDOM(res.text);
+        const title = document.querySelector('h1[class=book-page-heading]').textContent;
         const pDocument = document.querySelector('div[class=problembody]');
-        const limit = document.querySelectorAll('div[class="attribute_list-item"]');
-        const time = `${+limit[0].children[1].innerHTML.split(' ')[0] * 1000}`;
-        const memory = limit[1].children[1].innerHTML.split(' ')[0];
+        const another = document.querySelectorAll('div[class="attribute_list-item"]');
+        const time = `${+another[0].children[1].textContent.split(' ')[0] * 1000}`;
+        const memory = another[1].children[1].textContent.split(' ')[0];
+        const tag = [];
+        for (const sNode of another) {
+            if (sNode.textContent.includes('Source')) tag.push(sNode.children[1].textContent.trim());
+        }
         const images = {};
         const files = {};
         pDocument.querySelectorAll('img[src]').forEach((ele) => {
@@ -96,17 +101,24 @@ export default class KATTISProvider implements IBasicProvider {
                 const output = inoutSample.children[1].children[0];
                 html += `\n\n<pre><code class="language-output${lastId}">${output.textContent}</code></pre>\n\n`;
                 lastId++;
+            } else if (node.className === 'illustration') {
+                const pic = document.createElement('p');
+                pic.innerHTML = node.children[0].outerHTML.trim();
+                const picDescription = document.createElement('p');
+                picDescription.innerHTML = node.children[1].textContent.trim();
+                html += pic.outerHTML + picDescription.outerHTML;
+            } else {
+                html += node.outerHTML;
             }
         }
-        const tag = [];
         return {
-            title: '',
+            title,
             data: {
                 'config.yaml': Buffer.from(`time: ${time}\nmemory: ${memory}\ntype: remote_judge\nsubType: kattis\ntarget: ${id}`),
             },
             files,
             tag,
-            content: JSON.stringify(html),
+            content: JSON.stringify({ en: html }),
         };
     }
 
