@@ -10,6 +10,10 @@ import { IBasicProvider, RemoteAccount } from '../interface';
 proxy(superagent as any);
 const logger = new Logger('remote/kattis');
 
+function isElementNode(el:Node): el is Element {
+    return el.nodeType === el.ELEMENT_NODE;
+}
+
 export default class KATTISProvider implements IBasicProvider {
     constructor(public account: RemoteAccount, private save: (data: any) => Promise<void>) {
         if (account.cookie) this.cookie = account.cookie;
@@ -68,7 +72,6 @@ export default class KATTISProvider implements IBasicProvider {
         const res = await this.get(`/problems/${id.split('P')[1]}`);
         const { window: { document } } = new JSDOM(res.text);
         const title = document.querySelector('h1[class=book-page-heading]').textContent;
-        const pDocument = document.querySelector('div[class=problembody]');
         const another = document.querySelectorAll('div[class="attribute_list-item"]');
         const time = `${+another[0].children[1].textContent.split(' ')[0] * 1000}`;
         const memory = another[1].children[1].textContent.split(' ')[0];
@@ -76,6 +79,8 @@ export default class KATTISProvider implements IBasicProvider {
         for (const sNode of another) {
             if (sNode.textContent.includes('Source')) tag.push(sNode.children[1].textContent.trim());
         }
+        const pDocument = document.querySelector('div[class=problembody]');
+        pDocument.innerHTML = pDocument.innerHTML.replace(/<span class="tex2jax_process">\$/g, '$').replace(/\$<\/span>/g, '$');
         const images = {};
         const files = {};
         pDocument.querySelectorAll('img[src]').forEach((ele) => {
@@ -93,24 +98,52 @@ export default class KATTISProvider implements IBasicProvider {
         });
         let html = '';
         let lastId = 1;
-        for (const node of pDocument.children) {
-            if (node.className === 'sample') {
-                if (node.children[0].children[0].textContent.includes('Interaction')) continue;
-                const inoutSample = node.children[0].children[1];
-                const input = inoutSample.children[0].children[0];
-                html += `\n\n<pre><code class="language-input${lastId}">${input.textContent}</code></pre>\n\n`;
-                const output = inoutSample.children[1].children[0];
-                html += `\n\n<pre><code class="language-output${lastId}">${output.textContent}</code></pre>\n\n`;
-                lastId++;
-            } else if (node.className === 'illustration') {
-                const pic = document.createElement('p');
-                pic.innerHTML = node.children[0].outerHTML.trim();
-                const picDescription = document.createElement('p');
-                picDescription.innerHTML = node.children[1].textContent.trim();
-                html += pic.outerHTML + picDescription.outerHTML;
+        let i = 0;
+        while (i < pDocument.childNodes.length) {
+            const node = pDocument.childNodes[i];
+            if (isElementNode(node)) {
+                if (node.className === 'sample') {
+                    if (node.children[0].children[0].textContent.includes('Interaction')) {
+                        i++;
+                        continue;
+                    }
+                    const inoutSample = node.children[0].children[1];
+                    const input = inoutSample.children[0].children[0];
+                    html += `\n\n<pre><code class="language-input${lastId}">${input.textContent}</code></pre>\n\n`;
+                    const output = inoutSample.children[1].children[0];
+                    html += `\n\n<pre><code class="language-output${lastId}">${output.textContent}</code></pre>\n\n`;
+                    lastId++;
+                } else if (node.className === 'illustration') {
+                    const pic = document.createElement('p');
+                    pic.innerHTML = node.children[0].outerHTML.trim();
+                    const picDescription = document.createElement('p');
+                    picDescription.innerHTML = node.children[1].textContent.trim();
+                    html += pic.outerHTML + picDescription.outerHTML;
+                } else if (node.tagName === 'PRE') {
+                    html += `<pre><code>${node.innerHTML}</code></pre>`;
+                } else {
+                    for (const preCode of node.querySelectorAll('pre')) {
+                        const pre = document.createElement('pre');
+                        pre.innerHTML = `<code>${preCode.innerHTML}</code>`;
+                        preCode.replaceWith(pre);
+                    }
+                    html += node.outerHTML.replace(/\n\n/g, '\n').replace(/\\begin{equation\*}/g, '$').replace(/\\end{equation\*}/g, '$');
+                }
             } else {
-                html += node.outerHTML.replace(/\n\n/g, '\n').replace(/\\begin{equation*}/g, '$').replace(/\\end{equation*}/g, '$');
+                // eslint-disable-next-line no-lonely-if
+                if (node.nodeName === '#text' && node.nodeValue.trim() !== '') {
+                    const p = document.createElement('p');
+                    p.innerHTML = '';
+                    while (['#text', 'A', 'SPAN'].indexOf(pDocument.childNodes[i].nodeName) !== -1) {
+                        const tNode = pDocument.childNodes[i];
+                        if (isElementNode(tNode)) p.innerHTML += tNode.outerHTML;
+                        else p.innerHTML += tNode.nodeValue;
+                        i++;
+                    }
+                    html += p.outerHTML;
+                }
             }
+            i++;
         }
         return {
             title,
