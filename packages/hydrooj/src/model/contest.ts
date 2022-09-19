@@ -442,7 +442,7 @@ const homework = buildContestRule({
         if (isExport) {
             row.push({ type: 'string', value: tsdoc.score || 0 });
         }
-        row.push({ type: 'time', value: formatSeconds(tsdoc.time || 0, false), raw: tsdoc.time });
+        // row.push({ type: 'time', value: formatSeconds(tsdoc.time || 0, false), raw: tsdoc.time });
         for (const pid of tdoc.pids) {
             const rid = tsddict[pid]?.rid;
             const colScore = tsddict[pid]?.penaltyScore ?? '';
