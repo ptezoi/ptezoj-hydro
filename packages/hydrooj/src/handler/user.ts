@@ -154,6 +154,7 @@ class UserLogoutHandler extends Handler {
     async post() {
         this.session.uid = 0;
         this.session.scope = PERM.PERM_ALL.toString();
+        this.response.redirect = '/';
     }
 }
 
@@ -400,6 +401,7 @@ class OauthCallbackHandler extends Handler {
                     await user.setById(udoc._id, { loginat: new Date(), loginip: this.request.ip });
                     this.session.uid = udoc._id;
                     this.session.scope = PERM.PERM_ALL.toString();
+                    this.response.redirect = '/';
                     return;
                 }
             }
