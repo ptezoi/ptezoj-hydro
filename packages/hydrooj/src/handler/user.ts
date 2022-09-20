@@ -45,6 +45,7 @@ registerValue('User', [
     ['priv', 'Int!', 'User Privilege'],
     ['avatarUrl', 'String'],
     ['tfa', 'Boolean!'],
+    ['displayName', 'String'],
 ]);
 
 registerResolver(
