@@ -728,6 +728,7 @@ export interface UI {
 export interface HydroGlobal {
     version: Record<string, string>,
     model: Model,
+    /** @deprecated */
     handler: Record<string, Function>,
     script: Record<string, Script>,
     service: Service,
