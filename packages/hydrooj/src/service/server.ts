@@ -7,7 +7,6 @@ import Body from 'koa-body';
 import Compress from 'koa-compress';
 import proxy from 'koa-proxies';
 import cache from 'koa-static-cache';
-import { filter } from 'lodash';
 import WebSocket from 'ws';
 import { parseMemoryMB } from '@hydrooj/utils/lib/utils';
 import {

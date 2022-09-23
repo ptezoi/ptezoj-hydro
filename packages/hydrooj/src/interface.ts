@@ -699,6 +699,8 @@ export interface ProblemSearchOptions {
 
 export type ProblemSearch = (domainId: string, q: string, options?: ProblemSearchOptions) => Promise<ProblemSearchResponse>;
 
+export { Context as PluginContext } from './service/module';
+
 export interface Lib extends Record<string, any> {
     difficulty: typeof import('./lib/difficulty'),
     buildContent: typeof import('./lib/content').buildContent,

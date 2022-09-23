@@ -6,7 +6,7 @@ import {
     SystemError, UserAlreadyExistError, UserFacingError,
     UserNotFoundError, ValidationError, VerifyPasswordError,
 } from '../error';
-import { OAuthUserResponse, Udoc, User } from '../interface';
+import { Udoc, User } from '../interface';
 import avatar from '../lib/avatar';
 import { sendMail } from '../lib/mail';
 import { isEmail, isPassword } from '../lib/validator';
