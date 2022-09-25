@@ -72,5 +72,6 @@
         "esbuild-plugin-alias": "^0.2.1",
         "hydro-pdf-preview": "^1.0.2",
         "hydrooj-pastebin-plus": "^1.0.5"
-    }
+    },
+    "packageManager": "yarn@3.2.3"
 }
