@@ -106,7 +106,7 @@ class StudentModel {
         return udocs;
     }
 
-    static async getUserListByClassNameOrdered(domain: string, cls: string, limit:number = 3): Promise<User[]> {
+    static async getUserListByClassNameOrdered(domain: string, cls: string, limit: number = 3): Promise<User[]> {
         const uids: number[] = await this.getUserUidsByClassName(domain, cls);
         const promises: Promise<any>[] = await domainUsercoll.aggregate([
             { $match: { uid: { $in: uids } } },
@@ -170,13 +170,13 @@ class StudentModel {
         const calSortWeight = (cls) => Object.entries(sortWeights).reduce((pre, [key, val]) => pre + cls[key] * val, 0);
         const normalize = (val, min, max, newMin, newMax) => ((val - min) / (max - min)) * (newMax - newMin) + newMin;
 
-        const activityList = clsList.map((cls:{ activity:number }) => cls.activity / 1e5);
+        const activityList = clsList.map((cls: { activity: number }) => cls.activity / 1e5);
         const activityMax = Math.max(...activityList);
         const activityMin = Math.min(...activityList);
         clsList.forEach((cls) => { cls.activity = normalize(cls.activity / 1e5, activityMin - 1000, activityMax + 1000, 0, 1000); });
 
         clsList.forEach((cls) => { cls.weight = calSortWeight(cls); });
-        const weightList = clsList.map((cls:{ weight:number }) => cls.weight);
+        const weightList = clsList.map((cls: { weight: number }) => cls.weight);
         const weightMax = Math.max(...weightList);
         const weightMin = Math.min(...weightList);
         clsList.forEach((cls) => { cls.weight = normalize(cls.weight, weightMin - 1000, weightMax + 1000, 0, 1000); });
@@ -191,11 +191,11 @@ class StudentModel {
 }
 
 bus.on('student/cacheClassList', (content: string) => cache.set('classList', JSON.parse(content)));
-bus.on('student/cacheActivity', (cls:string, content: string) => cache.set(`activity/${cls}`, JSON.parse(content)));
+bus.on('student/cacheActivity', (cls: string, content: string) => cache.set(`activity/${cls}`, JSON.parse(content)));
 bus.on('student/invalidateClassListCache', () => cache.delete('classList'));
 bus.on('student/invalidateActivityCache', () => [...cache.keys()].filter((key) => /^activity\//.test(key)).forEach((key) => cache.delete(key)));
 
-bus.once('app/started', () => db.ensureIndexes(
+bus.on('app/started', () => db.ensureIndexes(
     coll,
     {
         key: { stuid: 1 }, name: 'stuid', unique: true, sparse: true,
