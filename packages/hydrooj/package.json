@@ -12,6 +12,10 @@
     },
     "preferUnplugged": true,
     "dependencies": {
+        "@aws-sdk/client-s3": "^3.178.0",
+        "@aws-sdk/middleware-endpoint": "^3.178.0",
+        "@aws-sdk/s3-presigned-post": "^3.178.0",
+        "@aws-sdk/s3-request-presigner": "^3.178.0",
         "@graphql-tools/schema": "^8.5.1",
         "@hydrooj/utils": "workspace:*",
         "adm-zip": "0.5.5",
