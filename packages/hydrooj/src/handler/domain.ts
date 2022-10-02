@@ -1,6 +1,7 @@
 import { load } from 'js-yaml';
 import { Dictionary } from 'lodash';
 import moment from 'moment-timezone';
+import { Context } from '../context';
 import {
     DomainJoinAlreadyMemberError, DomainJoinForbiddenError, ForbiddenError,
     InvalidJoinInvitationCodeError, PermissionError, RoleAlreadyExistError, ValidationError,
@@ -355,7 +356,7 @@ class CourseHandler extends Handler {
     }
 }
 
-export async function apply(ctx) {
+export async function apply(ctx: Context) {
     ctx.Route('ranking', '/ranking', DomainRankHandler, PERM.PERM_VIEW_RANKING);
     ctx.Route('domain_dashboard', '/domain/dashboard', DomainDashboardHandler);
     ctx.Route('domain_edit', '/domain/edit', DomainEditHandler);

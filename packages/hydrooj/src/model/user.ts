@@ -425,7 +425,7 @@ class UserModel {
     }
 }
 
-bus.on('app/started', () => Promise.all([
+bus.on('ready', () => Promise.all([
     db.ensureIndexes(
         coll,
         { key: { unameLower: 1 }, name: 'uname', unique: true },
