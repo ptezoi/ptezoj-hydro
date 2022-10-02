@@ -1,8 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import charset from 'superagent-charset';
 import proxy from 'superagent-proxy';
-import { STATUS } from '@hydrooj/utils/lib/status';
-import { Logger } from 'hydrooj/src/logger';
+import { Logger, STATUS } from 'hydrooj';
 import { IBasicProvider, RemoteAccount } from '../interface';
 const charset = require('superagent-charset');
 const superagent = charset(require('superagent'));

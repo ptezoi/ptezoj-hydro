@@ -3,12 +3,9 @@ import { PassThrough } from 'stream';
 import { JSDOM } from 'jsdom';
 import * as superagent from 'superagent';
 import proxy from 'superagent-proxy';
-import { STATUS } from '@hydrooj/utils/lib/status';
 import {
-    htmlEncode, parseMemoryMB, parseTimeMS, sleep,
-} from '@hydrooj/utils/lib/utils';
-import { Logger } from 'hydrooj/src/logger';
-import * as setting from 'hydrooj/src/model/setting';
+    htmlEncode, Logger, parseMemoryMB, parseTimeMS, SettingModel, sleep, STATUS,
+} from 'hydrooj';
 import { IBasicProvider, RemoteAccount } from '../interface';
 import { VERDICT } from '../verdict';
 
@@ -127,7 +124,7 @@ export default class POJProvider implements IBasicProvider {
         const memory = info.children[2].innerHTML.split('</b> ')[1].toLowerCase().trim();
         const contents = {};
         const images = {};
-        const tag = [];
+        let tag = '';
         for (const lang of languages) {
             await sleep(1000);
             const { text } = await this.get(`/problem?id=${id.split('P')[1]}&lang=${lang}&change=true`);
@@ -157,9 +154,8 @@ export default class POJProvider implements IBasicProvider {
                     if (!node.innerHTML.startsWith('Sample ')) {
                         html += `<h2>${htmlEncode(node.innerHTML)}</h2>`;
                         if (node.textContent === 'Source') {
-                            const sTag = node.nextElementSibling.textContent.trim();
-                            node.nextElementSibling.innerHTML = sTag;
-                            if (sTag !== '') tag.push(sTag);
+                            tag = node.nextElementSibling.textContent.trim();
+                            node.nextElementSibling.innerHTML = tag;
                         }
                     } else if (node.innerHTML.startsWith('Sample Input')) {
                         lastId++;
@@ -206,7 +202,7 @@ export default class POJProvider implements IBasicProvider {
                 'config.yaml': Buffer.from(`time: ${time}\nmemory: ${memory}\ntype: remote_judge\nsubType: poj\ntarget: ${id}`),
             },
             files,
-            tag,
+            tag: [tag],
             content: JSON.stringify(contents),
         };
     }
@@ -222,7 +218,7 @@ export default class POJProvider implements IBasicProvider {
     async submitProblem(id: string, lang: string, code: string, info) {
         await this.ensureLogin();
         const language = lang.includes('poj.') ? lang.split('poj.')[1] : '0';
-        const comment = setting.langs[lang].comment;
+        const comment = SettingModel.langs[lang].comment;
         if (comment) {
             const msg = `Hydro submission #${info.rid}@${new Date().getTime()}`;
             if (typeof comment === 'string') code = `${comment} ${msg}\n${code}`;

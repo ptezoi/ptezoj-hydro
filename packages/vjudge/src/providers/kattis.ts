@@ -3,14 +3,13 @@ import { PassThrough } from 'stream';
 import { JSDOM } from 'jsdom';
 import * as superagent from 'superagent';
 import proxy from 'superagent-proxy';
-import { STATUS } from '@hydrooj/utils/lib/status';
-import { Logger } from 'hydrooj/src/logger';
+import { Logger, STATUS } from 'hydrooj';
 import { IBasicProvider, RemoteAccount } from '../interface';
 
 proxy(superagent as any);
 const logger = new Logger('remote/kattis');
 
-function isElementNode(el:Node): el is Element {
+function isElementNode(el: Node): el is Element {
     return el.nodeType === el.ELEMENT_NODE;
 }
 

@@ -14,7 +14,7 @@ export interface RemoteAccount {
     page: number;
     enableOn?: string[];
 }
-declare module 'hydrooj/src/interface' {
+declare module 'hydrooj' {
     interface Collections {
         vjudge: RemoteAccount;
     }
