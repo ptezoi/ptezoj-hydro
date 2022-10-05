@@ -33,6 +33,7 @@ export { default as OauthModel } from './model/oauth';
 export { default as BlackListModel } from './model/blacklist';
 export { default as DomainModel } from './model/domain';
 export { default as StorageModel } from './model/storage';
+export { default as StudentModel } from './model/stuinfo';
 export { default as TaskModel } from './model/task';
 export * from './model/builtin';
 export * as JudgeHandler from './handler/judge';
