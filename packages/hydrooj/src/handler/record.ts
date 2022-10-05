@@ -15,14 +15,11 @@ import * as system from '../model/system';
 import TaskModel from '../model/task';
 import user from '../model/user';
 import * as bus from '../service/bus';
-import db from '../service/db';
 import {
     ConnectionHandler, Handler, param, Types,
 } from '../service/server';
 import { buildProjection } from '../utils';
 import { postJudge } from './judge';
-
-const coll = db.collection('document');
 
 class RecordListHandler extends Handler {
     @param('page', Types.PositiveInt, true)
@@ -136,7 +133,7 @@ class RecordDetailHandler extends Handler {
     // eslint-disable-next-line consistent-return
     async get(domainId: string, rid: ObjectID, download = false) {
         const rdoc = this.rdoc;
-        let tdoc;
+        let tdoc: Tdoc<30>;
         if (rdoc.contest?.toString() === '000000000000000000000000') {
             if (rdoc.uid !== this.user._id) throw new PermissionError(PERM.PERM_READ_RECORD_CODE);
         } else if (rdoc.contest) {
@@ -158,6 +155,10 @@ class RecordDetailHandler extends Handler {
         canViewCode ||= this.user.hasPriv(PRIV.PRIV_READ_RECORD_CODE);
         canViewCode ||= this.user.hasPerm(PERM.PERM_READ_RECORD_CODE);
         canViewCode ||= this.user.hasPerm(PERM.PERM_READ_RECORD_CODE_ACCEPT) && self?.status === STATUS.STATUS_ACCEPTED;
+        if (tdoc && contest.isDone(tdoc)) {
+            const tsdoc = await contest.getStatus(domainId, tdoc.docId, this.user._id);
+            canViewCode ||= tsdoc?.attend;
+        }
         if (!canViewCode) {
             rdoc.code = '';
             rdoc.files = {};
@@ -182,11 +183,7 @@ class RecordDetailHandler extends Handler {
     @param('rid', Types.ObjectID)
     async postRejudge(domainId: string, rid: ObjectID) {
         const priority = await record.submissionPriority(this.user._id, -20);
-        let isContest = false;
-        if (this.rdoc.contest) {
-            const ruleDoc = await coll.findOne({ _id: this.rdoc.contest });
-            isContest = ruleDoc['role'] in ['acm', 'oi', 'ioi'] && this.rdoc.contest.toString() !== '000000000000000000000000';
-        }
+        const isContest = this.rdoc.contest && this.rdoc.contest.toString() !== '000000000000000000000000';
         await record.reset(domainId, rid, true);
         await record.judge(domainId, rid, priority, isContest ? { detail: false } : {});
         this.back();
