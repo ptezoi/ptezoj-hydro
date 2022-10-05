@@ -52,8 +52,8 @@ export interface EventMap extends LifecycleEvents, HandlerEvents {
     'student/delCacheClassStudentsList': (content: string) => void
     'student/cacheActivity': (cls: any, content: string) => void
     'student/cacheClassList': (content: string) => void
-    'student/invalidateClassListCache'
-    'student/invalidateActivityCache'
+    'student/invalidateClassListCache': () => void
+    'student/invalidateActivityCache': () => void
 
     'domain/create': (ddoc: DomainDoc) => VoidReturn
     'domain/before-get': (query: FilterQuery<DomainDoc>) => VoidReturn
