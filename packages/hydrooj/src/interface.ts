@@ -609,7 +609,7 @@ declare module './service/db' {
         'blacklist': BlacklistDoc;
         'domain': DomainDoc;
         'domain.user': any;
-        'stu.info': any;
+        'stu.info': Student;
         'record': RecordDoc;
         'document': any;
         'document.status': StatusDocBase;
