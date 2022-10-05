@@ -659,7 +659,6 @@ export interface Model {
 export interface HydroService {
     bus: typeof import('./service/bus'),
     db: typeof import('./service/db').default,
-    monitor: typeof import('./service/monitor'),
     server: typeof import('./service/server'),
     storage: typeof import('./service/storage').default,
 }
