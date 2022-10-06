@@ -18,6 +18,8 @@ import { STATUS } from './builtin';
 import problem from './problem';
 import task from './task';
 
+const coll = db.collection('document');
+
 export default class RecordModel {
     static coll = db.collection('record');
     static PROJECTION_LIST: (keyof RecordDoc)[] = [
@@ -143,10 +145,15 @@ export default class RecordModel {
             data.input = args.input || '';
             data.contest = new ObjectID('000000000000000000000000');
         }
+        let isContest = false;
+        if (args.type === 'contest') {
+            const ruleDoc = await coll.findOne({ _id: data.contest });
+            isContest = ruleDoc['role'] in ['acm', 'oi', 'ioi'] && data.contest.toString() !== '000000000000000000000000';
+        }
         const res = await RecordModel.coll.insertOne(data);
         if (addTask) {
             const priority = await RecordModel.submissionPriority(uid, args.type === 'pretest' ? -20 : (args.type === 'contest' ? 50 : 0));
-            await RecordModel.judge(domainId, res.insertedId, priority, args.type === 'contest' ? { detail: false } : {});
+            await RecordModel.judge(domainId, res.insertedId, priority, isContest ? { detail: false } : {});
         }
         return res.insertedId;
     }
