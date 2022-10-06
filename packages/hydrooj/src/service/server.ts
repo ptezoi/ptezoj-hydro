@@ -215,8 +215,8 @@ export class Handler extends HandlerCommon {
     }
 }
 
-async function bail(name: string, ...args: any[]) {
-    const r = await (bus.bail as any)(name, ...args);
+async function serial(name: string, ...args: any[]) {
+    const r = await (bus.serial as any)(name, ...args);
     if (r instanceof Error) throw r;
     return r;
 }
@@ -269,7 +269,7 @@ async function handle(ctx: KoaContext, HandlerClass, checker) {
             let control;
             if (step.startsWith('log/')) h.args[step.slice(4)] = Date.now();
             // eslint-disable-next-line no-await-in-loop
-            else if (step.startsWith('handler/')) control = await bail(step, h);
+            else if (step.startsWith('handler/')) control = await serial(step, h);
             // eslint-disable-next-line no-await-in-loop
             else if (typeof h[step] === 'function') control = await h[step](args);
             if (control) {
