@@ -52,9 +52,9 @@ export interface EventMap extends LifecycleEvents, HandlerEvents {
     'user/get': (udoc: User) => void
     'user/delcache': (content: string) => void
 
-    'student/delcache': (content: string) => void
+    'student/delcache': (content: any) => void
     'student/delCacheClassStudentsList': (content: string) => void
-    'student/cacheActivity': (cls: any, content: string) => void
+    'student/cacheActivity': (cls: number, content: string) => void
     'student/cacheClassList': (content: string) => void
     'student/invalidateClassListCache': () => void
     'student/invalidateActivityCache': () => void
