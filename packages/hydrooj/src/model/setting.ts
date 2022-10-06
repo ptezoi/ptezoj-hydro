@@ -250,14 +250,13 @@ SystemSetting(
 export const langs: Record<string, LangConfig> = {};
 
 export async function apply(ctx: Context) {
-    logger.debug('Ensuring settings');
+    logger.info('Ensuring settings');
     const system = global.Hydro.model.system;
     for (const setting of SYSTEM_SETTINGS) {
-        if (setting.value) {
-            const current = await global.Hydro.service.db.collection('system').findOne({ _id: setting.key });
-            if (!current || current.value == null || current.value === '') {
-                await retry(system.set, setting.key, setting.value);
-            }
+        if (!setting.value) continue;
+        const current = await global.Hydro.service.db.collection('system').findOne({ _id: setting.key });
+        if (!current || current.value == null || current.value === '') {
+            await retry(system.set, setting.key, setting.value);
         }
     }
     try {
@@ -268,26 +267,14 @@ export async function apply(ctx: Context) {
         ServerLangSettingNode.range = range;
     } catch (e) { /* Ignore */ }
     ctx.on('system/setting', (args) => {
-        if (args.hydrooj?.langs) {
-            Object.assign(langs, parseLang(args.hydrooj.langs));
-            const range = {};
-            for (const key in langs) range[key] = langs[key].display;
-            LangSettingNode.range = range;
-            ServerLangSettingNode.range = range;
-        }
-    });
-}
-
-bus.on('system/setting', (args) => {
-    if (args.hydrooj?.langs) {
-        langs = parseLang(args.hydrooj.langs);
-        global.Hydro.model.setting.langs = langs;
+        if (!args.hydrooj?.langs) return;
+        Object.assign(langs, parseLang(args.hydrooj.langs));
         const range = {};
         for (const key in langs) range[key] = langs[key].display;
         LangSettingNode.range = range;
         ServerLangSettingNode.range = range;
-    }
-});
+    });
+}
 
 global.Hydro.model.setting = {
     apply,
