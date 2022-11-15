@@ -42,6 +42,7 @@ export function deleteUserCache(udoc: User | Udoc | string | true | undefined | 
     for (const key of [...cache.keys()].filter((k) => id.includes(`${k.split('/')[0]}/${k.split('/')[1]}`))) {
         cache.delete(key);
     }
+    return true;
 }
 bus.on('user/delcache', (content) => deleteUserCache(typeof content === 'string' ? JSON.parse(content) : content, true));
 
