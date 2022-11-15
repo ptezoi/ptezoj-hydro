@@ -434,7 +434,7 @@ export async function apply(pluginContext) {
         }
         return next();
     });
-    for (const addon of global.addons) {
+    for (const addon of [...global.addons].reverse()) {
         const dir = resolve(addon, 'public');
         if (!fs.existsSync(dir)) continue;
         app.use(cache(dir, {
