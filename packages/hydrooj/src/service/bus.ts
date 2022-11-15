@@ -50,7 +50,7 @@ export interface EventMap extends LifecycleEvents, HandlerEvents {
 
     'user/message': (uid: number, mdoc: MessageDoc) => void
     'user/get': (udoc: User) => void
-    'user/delcache': (content: string) => void
+    'user/delcache': (content: string | true) => void
 
     'student/delcache': (content: any) => void
     'student/delCacheClassStudentsList': (content: string) => void
