@@ -493,7 +493,7 @@ export interface OplogDoc extends Record<string, any> {
 }
 
 export interface ContestStat extends Record<string, any> {
-    detail: any,
+    detail: Record<number, Record<string, any>>,
 }
 
 export interface ContestRule<T = any> {

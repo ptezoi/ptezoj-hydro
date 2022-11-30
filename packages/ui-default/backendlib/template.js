@@ -134,6 +134,7 @@ nunjucks.runtime.memberLookup = function memberLookup(obj, val) {
 };
 const env = new Nunjucks();
 env.addGlobal('static_url', (assetName) => {
+  // DEPRECATED
   const cdnPrefix = process.env.DEV ? '/' : global.Hydro.model.system.get('server.cdn');
   return `${cdnPrefix}${assetName}`;
 });
@@ -141,12 +142,13 @@ env.addGlobal('static_url', (assetName) => {
 env.addGlobal('eval', eval);
 env.addGlobal('Date', Date);
 env.addGlobal('Object', Object);
+env.addGlobal('String', String);
 env.addGlobal('Math', Math);
 env.addGlobal('process', process);
 env.addGlobal('global', global);
 env.addGlobal('typeof', (o) => typeof o);
-env.addGlobal('paginate', misc.paginate);
 env.addGlobal('instanceof', (a, b) => a instanceof b);
+env.addGlobal('paginate', misc.paginate);
 env.addGlobal('size', misc.size);
 env.addGlobal('utils', { status });
 env.addGlobal('avatarUrl', avatar);
