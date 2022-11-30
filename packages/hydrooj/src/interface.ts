@@ -561,7 +561,6 @@ export interface Task {
     _id: ObjectID;
     type: string;
     subType?: string;
-    executeAfter: Date;
     priority: number;
     [key: string]: any;
 }
