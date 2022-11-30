@@ -16,10 +16,10 @@ import domain from '../model/domain';
 import oauth from '../model/oauth';
 import * as oplog from '../model/oplog';
 import problem, { ProblemDoc } from '../model/problem';
+import ScheduleModel from '../model/schedule';
 import SolutionModel from '../model/solution';
 import student from '../model/stuinfo';
 import * as system from '../model/system';
-import task from '../model/task';
 import token from '../model/token';
 import user from '../model/user';
 import * as bus from '../service/bus';
@@ -397,7 +397,7 @@ class UserDetailHandler extends Handler {
 class UserDeleteHandler extends Handler {
     async post({ password }) {
         this.user.checkPassword(password);
-        const tid = await task.add({
+        const tid = await ScheduleModel.add({
             executeAfter: moment().add(7, 'days').toDate(),
             type: 'script',
             id: 'deleteUser',
