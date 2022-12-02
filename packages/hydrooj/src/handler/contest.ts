@@ -293,12 +293,13 @@ export class ContestEditHandler extends Handler {
         }
         let ts = Date.now();
         ts = ts - (ts % (15 * Time.minute)) + 15 * Time.minute;
+        const beginAt = moment(this.tdoc?.beginAt || new Date(ts)).tz(this.user.timeZone);
         this.response.body = {
             rules,
             tdoc: this.tdoc,
-            duration: tid ? (this.tdoc.endAt.getTime() - this.tdoc.beginAt.getTime()) / Time.hour : 2,
+            duration: tid ? -beginAt.diff(this.tdoc.endAt, 'hour', true) : 2,
             pids: tid ? this.tdoc.pids.join(',') : '',
-            beginAt: this.tdoc?.beginAt || new Date(ts),
+            beginAt,
             lock: tid && this.tdoc.lockAt ? (this.tdoc.endAt.getTime() - this.tdoc.lockAt.getTime()) / Time.minute : 0,
             page_name: tid ? 'contest_edit' : 'contest_create',
         };
