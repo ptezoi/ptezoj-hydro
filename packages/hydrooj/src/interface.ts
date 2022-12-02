@@ -705,7 +705,7 @@ export interface Lib extends Record<string, any> {
     template?: any;
 }
 
-export type UIInjectableFields = 'ProblemAdd' | 'Nav' | 'UserDropdown' | 'DomainManage' | 'ControlPanel';
+export type UIInjectableFields = 'ProblemAdd' | 'Notification' | 'Nav' | 'UserDropdown' | 'DomainManage' | 'ControlPanel';
 export interface UI {
     template: Record<string, string>,
     nodes: Record<UIInjectableFields, any[]>,
