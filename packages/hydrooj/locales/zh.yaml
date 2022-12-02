@@ -1,9 +1,9 @@
 __id: zh
 __langname: 简体中文
 '"{data}" copied to clipboard!': “{data}”已复制到剪贴板！
-'{0} {1} delete your discussion reply {2} in "{3}"({4}).' : '{0} {1} 从讨论 {3}({4}) 删除了你的回复 {2}。'
+'{0} {1} delete your discussion reply {2} in "{3}"({4}).' : '{0} {1} 从公告 {3}({4}) 删除了你的回复 {2}。'
 '{0} comments': '{0} 条评论'
-'{0} discussions': '{0} 条讨论'
+'{0} discussions': '{0} 条公告'
 '{0} is a moderator of this domain.': '{}是这个域的管理者之一。'
 '{0} limit exceeded (limit: {2} operations in {1} seconds).': '{0} 超过频率限制。限制：{1} 秒内最多 {2} 次操作。'
 '{0} problems': '{0} 道题'
@@ -25,7 +25,7 @@ __langname: 简体中文
 'Copy "{data}" failed :(': '复制“{data}”失败 :('
 'Copy failed :(': '复制失败 :('
 'Current dataset: {0}': '当前测试数据: {0}'
-'Discussion: Terms Of Service': 讨论区服务条款
+'Discussion: Terms Of Service': 公告区服务条款
 'Format: category 1, sub category 1.1, sub category 1.2, ..., sub category 1.x, ..., category n, sub category n.1, sub category n.2, ..., sub category n.m, ...': 格式：分类1, 子分类1.1, 子分类1.2, ..., 子分类1.x, ..., 分类n, 子分类n.1, 子分类n.2, ..., 子分类n.m, ...
 'Join {0}': '加入 {0}'
 'No': 否
@@ -60,8 +60,8 @@ Add new data: 添加新数据
 Add User: 添加用户
 Add: 添加
 Additional File: 附加文件
-Admin {0} delete your discussion "{1}". : 管理员 {0} 删除了你的讨论 "{1}"。
-Admin {0} delete your discussion tail reply {1} in "{2}"({3}). : 管理员 {0} 从讨论 {2}({3}) 中删除了你的楼中楼回复 {1}。
+Admin {0} delete your discussion "{1}". : 管理员 {0} 删除了你的公告 "{1}"。
+Admin {0} delete your discussion tail reply {1} in "{2}"({3}). : 管理员 {0} 从公告 {2}({3}) 中删除了你的楼中楼回复 {1}。
 All {0} Contests: 所有 {0} 比赛
 All Contests: 所有比赛
 All Homeworks: 所有作业
@@ -174,13 +174,13 @@ Copyright Complaint: 版权申诉
 courses: 课程
 CPU Info: CPU信息
 Create a contest: 创建一个比赛
-Create a Discussion: 创建一个讨论
+Create a Discussion: 创建一个公告
 Create a problem: 创建一个题目
 Create Contest: 创建比赛
 Create contests: 创建比赛
-Create Discussion in {0}: 在 {0} 下创建讨论
-Create Discussion: 创建讨论
-Create discussions: 创建讨论
+Create Discussion in {0}: 在 {0} 下创建公告
+Create Discussion: 创建公告
+Create discussions: 创建公告
 Create Domain: 创建域
 Create homework: 创建作业
 Create Homework: 创建作业
@@ -214,11 +214,11 @@ Default display language: 默认显示语言
 Default Privilege: 用户默认全站权限
 Delay: 延迟
 Delete a user: 删除用户
-Delete discussion replies of own discussion: 删除自己讨论中的回复
-Delete discussion replies: 删除讨论回复
-Delete discussions: 删除讨论
-Delete own discussion replies: 删除讨论中自己的回复
-Delete own discussions: 删除自己的讨论
+Delete discussion replies of own discussion: 删除自己公告中的回复
+Delete discussion replies: 删除公告回复
+Delete discussions: 删除公告
+Delete own discussion replies: 删除公告中自己的回复
+Delete own discussions: 删除自己的公告
 Delete own problem solution replies: 删除题解中自己的回复
 Delete own problem solutions: 删除自己的题解
 Delete problem solution replies: 删除题解的回复
@@ -235,20 +235,20 @@ Difficulty by algorithm: 算法计算的难度
 Difficulty displayed: 显示的难度
 Difficulty: 难度
 Disabled: 关闭
-Discussion {1} not found.: 讨论 {1} 不存在。
-Discussion category {1} already exists.: 讨论分类 {1} 已经存在。
-Discussion category {1} not found.: 讨论分类 {1} 不存在。
-Discussion node {1} already exists.: 讨论节点 {1} 已经存在。
-Discussion node {1} not found.: 讨论节点 {1} 不存在。
-Discussion Nodes: 讨论节点
-discussion_create: 创建讨论
-discussion_detail: 讨论详情
-discussion_edit: 编辑讨论
-discussion_main: 讨论
-discussion_node: 讨论
-Discussion: 讨论
-Discussions per page: 每页展示的讨论数量
-Discussions: 讨论
+Discussion {1} not found.: 公告 {1} 不存在。
+Discussion category {1} already exists.: 公告分类 {1} 已经存在。
+Discussion category {1} not found.: 公告分类 {1} 不存在。
+Discussion node {1} already exists.: 公告节点 {1} 已经存在。
+Discussion node {1} not found.: 公告节点 {1} 不存在。
+Discussion Nodes: 公告节点
+discussion_create: 创建公告
+discussion_detail: 公告详情
+discussion_edit: 编辑公告
+discussion_main: 公告
+discussion_node: 公告
+Discussion: 公告
+Discussions per page: 每页展示的公告数量
+Discussions: 公告
 Display name {1} you want to set is used by others.: 您想要设置的显示名 {1} 已经被其他人使用了。
 Display Name: 显示名
 display_name: 显示名
@@ -261,7 +261,7 @@ Domain ID cannot be changed once the domain is created.: 在创建后不能更�
 Domain ID: 域 ID
 domain_create: 创建域
 domain_dashboard: 管理域
-domain_discussion: 讨论节点
+domain_discussion: 公告节点
 domain_edit: 编辑域资料
 domain_file: 我的文件
 domain_group: 管理小组
@@ -285,15 +285,15 @@ Edit any contests: 修改任意的比赛
 Edit any homework: 修改任意的作业
 Edit Contest: 编辑比赛
 Edit description of this domain: 修改此域描述
-Edit discussion replies of own discussion: 修改自己讨论中的回复
-Edit discussion replies: 修改讨论的回复
-Edit discussions: 修改讨论
+Edit discussion replies of own discussion: 修改自己公告中的回复
+Edit discussion replies: 修改公告的回复
+Edit discussions: 修改公告
 Edit domain settings: 编辑域设置
 Edit Domain: 编辑域
 Edit Homework: 编辑作业
 Edit own contests: 修改自己的比赛
-Edit own discussion replies: 修改讨论中自己的回复
-Edit own discussions: 修改自己的讨论
+Edit own discussion replies: 修改公告中自己的回复
+Edit own discussions: 修改自己的公告
 Edit own homework: 修改自己的作业
 Edit own problem solution replies: 修改题解中自己的回复
 Edit own problem solutions: 修改自己的题解
@@ -351,7 +351,7 @@ Hidden: 隐藏
 Hide all tags: 隐藏所有标签
 Hide categorical tags: 隐藏分类标签
 Hide Selected: 隐藏选中
-Highlight discussions: 高亮讨论
+Highlight discussions: 高亮公告
 highlight: 高亮
 Highlight: 高亮
 Hint: 提示
@@ -397,7 +397,7 @@ In following homework: 在以下作业中
 In following training plans: 在下列训练计划中
 In Progress: 进行中
 Information: 信息
-Init Discussion Nodes: 初始化讨论结点
+Init Discussion Nodes: 初始化公告结点
 Initialize: 初始化
 Inline codes: 行内代码
 Inline formulas: 行内公式
@@ -443,7 +443,7 @@ Lock discussions: 锁定公告
 Lock Topic: 锁定主题
 Login to Attend Contest: 登录后参加比赛
 Login to Claim Homework: 登录后认领作业
-Login to Create a Discussion: 登录后创建讨论
+Login to Create a Discussion: 登录后创建公告
 Login to join training plan: 登录以参加训练计划
 Login to Submit: 登录后递交
 Login: 登录
@@ -496,10 +496,10 @@ New Training Plan: 新训练计划
 New: 创建
 No comments so far...: 目前还没有评论...
 No dataset at present.: 暂无测试数据。
-no discussion yet...: 目前没有讨论…
+no discussion yet...: 目前没有公告…
 No Permission to Attend Contest: 您没有权限参加比赛
 No Permission to Claim Homework: 您没有权限认领作业
-No Permission to Create a Discussion: 您没有权限创建讨论
+No Permission to Create a Discussion: 您没有权限创建公告
 No Permission to Submit: 您没有权限递交
 No problem.: 没有题目。
 No solutions so far...: 目前还没有题解...
@@ -516,7 +516,7 @@ Not started with a number: 不以数字开头
 Not wrapped with space: 两侧不含空格
 Numeric PID: 数字题号
 Oh, the user doesn't have any contributions!: 啊哦，这个用户还没贡献过题目~
-Oh, the user hasn't created any discussions yet!: 这个用户还没有发布过讨论
+Oh, the user hasn't created any discussions yet!: 这个用户还没有发布过公告
 Oh, the user hasn't submitted yet!: 这个用户还没有交过题 _(:зゝ∠)_
 Oh, there is no task in the queue!: 喔，队列中目前没有任务。
 Oh, there is no task that matches the filter!: 喔，目前没有符合过滤条件的任务。
@@ -552,7 +552,7 @@ Path {0} not found.: 路径 {0} 不存在。
 Peak Memory: 峰值内存
 Penalty (Minutes): 罚时（分钟）
 perm_contest: 比赛
-perm_discussion: 讨论
+perm_discussion: 公告
 perm_general: 一般
 perm_homework: 作业
 perm_problem_solution: 题解
@@ -565,7 +565,7 @@ Permissions: 权限
 Phone: 手机号
 Pick a problem randomly based on current filter: 根据当前过滤条件随机选择一道题
 pid: 题目 ID
-Pin discussions: 置顶讨论
+Pin discussions: 置顶公告
 Pin training plans: 置顶训练计划
 Plan: 计划
 Please attend contest to see the problems.: 请参加比赛来查看题目。
@@ -636,7 +636,7 @@ Registered at: 注册于
 Rejudge problems: 重测题目
 Rejudge records: 重测记录
 Rejudge: 重测
-Related Discussions: 相关讨论
+Related Discussions: 相关公告
 Related: 相关
 Relax and try to remember your password.: 放松，尝试回忆您设置的密码。
 Remember me: 记住我
@@ -645,7 +645,7 @@ Remove this data: 移除这组数据
 Remove: 移除
 Repeat Password: 重复密码
 Replies per page: 每页展示的回复数量
-Reply discussions: 回复讨论
+Reply discussions: 回复公告
 Reply problem solutions: 回复题解
 reply: 回复
 Reply: 回复
@@ -682,7 +682,7 @@ Secret (visible to admins): 保密（对管理员可见）
 Secret: 保密
 Section: 章节
 Security: 安全
-Select a node to create discussion.: 选择一个节点来发表讨论。
+Select a node to create discussion.: 选择一个节点来发表公告。
 Select a role: 选择一个角色
 Select User: 选择用户
 Selected roles have been deleted.: 所选角色已删除。
@@ -732,7 +732,7 @@ Sorry: 对不起
 Sort by: 排序
 Source type: 来源类型
 Split View: 分屏预览
-Star Topic: 收藏讨论
+Star Topic: 收藏公告
 Star: 收藏
 Starred Problems: 收藏的题目
 Start at: 开始于
@@ -761,7 +761,7 @@ Terms of Service: 服务条款
 Test data comes from: 测试数据来自
 Testdata Config: 测试数据配置
 Text: 文本
-The discussion is locked, you can not reply anymore.: 此讨论已经锁定，您不能再回复。
+The discussion is locked, you can not reply anymore.: 此公告已经锁定，您不能再回复。
 The homework's deadline is due but in extension. You can still submit for this problem but your score will be penalized.: 作业已超过截止时间，但仍在延期时间内。您递交题目将无法获得全部分数。
 The invitation code to enter to successfully join the domain. You can only use letters and numbers in the code and it should not be longer than 64 characters.: 加入此域的邀请码。您只能使用字母和数字，并且不能长于 64 个字符。
 The invitation code you provided is invalid.: 您提供的邀请码无效。
@@ -857,7 +857,7 @@ View contest scoreboard: 查看比赛成绩表
 View Contest: 查看比赛
 View contests: 查看比赛
 View Details: 查看详情
-View discussions: 查看讨论
+View discussions: 查看公告
 View domain user displayname: 显示域中用户的显示名
 View hidden contest submission status and scoreboard: 查看隐藏的比赛递交状态和成绩表
 View hidden homework submission status and scoreboard: 查看隐藏的作业递交状态和成绩表
@@ -865,7 +865,7 @@ View hidden problems: 查看隐藏的题目
 View homework scoreboard: 查看作业成绩表
 View homework: 查看作业
 View Homework: 查看作业
-View or create discussion: 查看与发表讨论
+View or create discussion: 查看与发表公告
 View or submit solution: 查看与发表题解
 View Owned Problems: 查看自己的题目
 View Owned Training Plans: 查看自己的训练计划
