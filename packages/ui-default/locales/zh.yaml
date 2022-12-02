@@ -924,6 +924,7 @@ Visible to registered users: 对注册用户可见
 Visit: 查看
 Vote problem solutions: 为题解投票
 Vote: 投票
+warn::admin:unsupportedbrowser: "身为超级管理员，您仍在使用过于老旧的浏览器。\n这些浏览器可能不支持 Hydro 管理面板的部分功能，\n我们强烈建议您升级到最新的 Chrome 浏览器。"
 We will check code similarity after this contest.: 我们会在赛后检查代码相似度。
 WeChat Visibility: 微信可见性
 WeChat: 微信
