@@ -70,7 +70,7 @@ export class HomeHandler extends Handler {
 
     async getDiscussion(domainId: string, limit = 20) {
         if (!this.user.hasPerm(PERM.PERM_VIEW_DISCUSSION)) return [[], {}];
-        const ddocs = await discussion.getMulti(domainId).sort({ _id: -1 }).limit(limit).toArray();
+        const ddocs = await discussion.getMulti(domainId).limit(limit).toArray();
         const vndict = await discussion.getListVnodes(domainId, ddocs, this.user.hasPerm(PERM.PERM_VIEW_PROBLEM_HIDDEN), this.user.group);
         this.collectUser(ddocs.map((ddoc) => ddoc.owner));
         return [ddocs, vndict];
@@ -363,8 +363,6 @@ class HomeDomainCreateHandler extends Handler {
 }
 
 class HomeMessagesHandler extends Handler {
-    category = '#message';
-
     async get() {
         // TODO(iceboy): projection, pagination.
         const messages = await message.getByUser(this.user._id);
@@ -421,6 +419,7 @@ class HomeMessagesHandler extends Handler {
 }
 
 class HomeMessagesConnectionHandler extends ConnectionHandler {
+    category = '#message';
     dispose: bus.Disposable;
 
     async prepare() {
