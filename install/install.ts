@@ -95,8 +95,8 @@ function randomstring(digit = 32, dict = defaultDict) {
     return str;
 }
 let password = randomstring(32);
-// TODO read from args
-const CN = true;
+// eslint-disable-next-line
+let CN = true;
 
 const nixBin = `${process.env.HOME}/.nix-profile/bin`;
 const entry = (source: string, target = source, ro = true) => `\
@@ -179,10 +179,21 @@ function rollbackResolveField() {
     return true;
 }
 
-const steps = [
+const Steps = () => [
     {
         init: 'install.preparing',
         operations: [
+            () => {
+                if (CN) return;
+                // rollback mirrors
+                writeFileSync('/etc/nix/nix.conf', `substituters = https://cache.nixos.org/ https://nix.hydro.ac/cache
+trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= hydro.ac:EytfvyReWHFwhY9MCGimCIn46KQNfmv9y8E2NqlNfxQ=
+connect-timeout = 10`);
+                exec('nix-channel --del nixpkgs', { stdio: 'inherit' });
+                exec('nix-channel --add nixpkgs https://nixos.org/channels/nixpkgs-unstable', { stdio: 'inherit' });
+                exec('nix-channel --update', { stdio: 'inherit' });
+            },
+            'nix-env -iA nixpkgs.pm2 nixpkgs.yarn nixpkgs.esbuild nixpkgs.bash nixpkgs.unzip nixpkgs.zip nixpkgs.diffutils',
             () => {
                 // Not implemented yet
                 // if (fs.existsSync('/home/judge/src')) {
@@ -231,8 +242,25 @@ const steps = [
         init: 'install.hydro',
         operations: [
             () => removeOptionalEsbuildDeps(),
+            () => {
+                if (!CN) return;
+                try {
+                    exec('yarn config set registry https://registry.npmmirror.com/', { stdio: 'inherit' });
+                    exec('yarn global add hydrooj @hydrooj/ui-default @hydrooj/hydrojudge', { stdio: 'inherit' });
+                } catch (e) {
+                    console.log('Failed to install from npmmirror, fallback to yarnpkg');
+                } finally {
+                    exec('yarn config set registry https://registry.yarnpkg.com', { stdio: 'inherit' });
+                }
+                try {
+                    exec('yarn global add hydrooj @hydrooj/ui-default @hydrooj/hydrojudge');
+                } catch (e) {
+                    console.log('Failed to check update from yarnpkg');
+                }
+            },
             ['yarn global add hydrooj @hydrooj/ui-default @hydrooj/hydrojudge', { retry: true }],
             () => writeFileSync(`${process.env.HOME}/.hydro/addon.json`, '["@hydrooj/ui-default","@hydrooj/hydrojudge"]'),
+            () => rollbackResolveField(),
         ],
     },
     {
@@ -308,7 +336,6 @@ const steps = [
             },
             () => log.info('extra.dbUser'),
             () => log.info('extra.dbPassword', password),
-            () => rollbackResolveField(),
         ],
     },
     {
@@ -327,10 +354,21 @@ const steps = [
 ];
 
 async function main() {
+    try {
+        console.log('Getting IP info to find best mirror:');
+        const res = await fetch('https://ipinfo.io', { headers: { accept: 'application/json' } }).then((r) => r.json());
+        delete res.readme;
+        console.log(res);
+        if (res.country !== 'CN') CN = false;
+    } catch (e) {
+        console.error(e);
+        console.log('Cannot find the best mirror. Fallback to default.');
+    }
+    const steps = Steps();
     for (let i = 0; i < steps.length; i++) {
         const step = steps[i];
         if (!step.silent) log.info(step.init);
-        if (!(step.skip && step.skip())) {
+        if (!(step.skip?.())) {
             for (let op of step.operations) {
                 if (!(op instanceof Array)) op = [op, {}] as any;
                 if (op[0].toString().startsWith('nix-env')) op[1].retry = true;
@@ -346,7 +384,7 @@ async function main() {
                     }
                 } else {
                     retry = 0;
-                    let res = op[0](op[1]);
+                    let res = await op[0](op[1]);
                     while (res === 'retry') {
                         if (retry < 30) {
                             log.warn('Retry...');
@@ -361,3 +399,4 @@ async function main() {
     }
 }
 main().catch(log.fatal);
+global.main = main;
