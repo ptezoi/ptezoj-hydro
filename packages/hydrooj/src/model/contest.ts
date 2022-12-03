@@ -91,6 +91,7 @@ const acm = buildContestRule({
     async scoreboardHeader(isExport, _, tdoc, pdict) {
         const columns: ScoreboardRow = [
             { type: 'rank', value: '#' },
+            { type: 'stu_class', value: _('Stu_Class') },
             { type: 'user', value: _('User') },
         ];
         if (isExport) columns.push({ type: 'email', value: _('Email') });
@@ -123,6 +124,10 @@ const acm = buildContestRule({
         const tsddict = tsdoc.detail || {};
         const row: ScoreboardRow = [
             { type: 'rank', value: rank.toString() },
+            {
+                type: 'string',
+                value: udoc.class || '',
+            },
             { type: 'user', value: udoc.uname, raw: tsdoc.uid },
         ];
         if (isExport) row.push({ type: 'email', value: udoc.mail });
@@ -223,6 +228,7 @@ const oi = buildContestRule({
     async scoreboardHeader(isExport, _, tdoc, pdict) {
         const columns: ScoreboardNode[] = [
             { type: 'rank', value: '#' },
+            { type: 'stu_class', value: _('Stu_Class') },
             { type: 'user', value: _('User') },
         ];
         if (isExport) columns.push({ type: 'email', value: _('Email') });
@@ -249,6 +255,10 @@ const oi = buildContestRule({
         const tsddict = tsdoc.detail || {};
         const row: ScoreboardNode[] = [
             { type: 'rank', value: rank.toString() },
+            {
+                type: 'string',
+                value: udoc.class || '',
+            },
             { type: 'user', value: udoc.uname, raw: tsdoc.uid },
         ];
         if (isExport) row.push({ type: 'email', value: udoc.mail });
