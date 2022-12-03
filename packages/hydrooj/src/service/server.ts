@@ -35,12 +35,6 @@ import { encodeRFC5987ValueChars } from './storage';
 
 export * from './decorators';
 
-bus.on('handler/after', (that) => {
-    that.ctx.set('Access-Control-Allow-Origin', '*');
-    that.ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    that.ctx.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-});
-
 export interface HydroRequest {
     method: string;
     host: string;
