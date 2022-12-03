@@ -361,9 +361,6 @@ export interface Tdoc<docType = document['TYPE_CONTEST'] | document['TYPE_TRAINI
     assign?: string[];
     files?: FileInfo[];
     allowViewCode?: boolean;
-    nSubmit?: Record<number, number>;
-    nAccept?: Record<number, number>;
-
     // For contest
     lockAt?: Date;
     unlocked?: boolean;
