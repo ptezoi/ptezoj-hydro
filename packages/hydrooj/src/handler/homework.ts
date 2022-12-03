@@ -38,6 +38,7 @@ class HomeworkMainHandler extends Handler {
         this.response.body = {
             tdocs, calendar, tpcount, page,
         };
+        this.response.template = 'homework_main.html';
     }
 }
 
