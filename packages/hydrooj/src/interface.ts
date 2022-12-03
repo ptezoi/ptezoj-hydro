@@ -459,7 +459,7 @@ export interface DiscussionTailReplyDoc {
     content: string;
     ip: string;
     edited?: boolean;
-    editor?:number;
+    editor?: number;
 }
 
 export interface BlogDoc {
@@ -746,7 +746,7 @@ export interface HydroGlobal {
     error: typeof import('./error');
     Logger: typeof import('./logger').Logger;
     logger: typeof import('./logger').logger;
-    locales: Record<string, Record<string, string>>;
+    locales: Record<string, Record<string, string> & Record<symbol, Record<string, string>>>;
 }
 
 declare global {
