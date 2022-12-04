@@ -43,3 +43,4 @@ export {
 export { UiContextBase } from './service/layers/base';
 export * as StorageService from './service/storage';
 export { EventMap } from './service/bus';
+export { db };
