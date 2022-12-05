@@ -2,8 +2,8 @@ import moment from 'moment-timezone';
 import notp from 'notp';
 import b32 from 'thirty-two';
 import {
-    BlacklistedError, ForbiddenError, InvalidTokenError, LoginError,
-    SystemError, UserAlreadyExistError, UserFacingError,
+    BlacklistedError, BuiltinLoginError, ForbiddenError, InvalidTokenError,
+    SystemError, TFAOperationError, UserAlreadyExistError, UserFacingError,
     UserNotFoundError, ValidationError, VerifyPasswordError,
 } from '../error';
 import { Udoc, User } from '../interface';
@@ -55,8 +55,8 @@ registerResolver(
 registerResolver(
     'TFAContext', 'enable(secret: String!, code: String!)', 'Boolean!',
     async (arg, ctx) => {
-        if (ctx.user._tfa) throw new Error('2FA is already enabled');
-        if (!verifyToken(arg.secret, arg.code)) throw new Error('Invalid 2FA code');
+        if (ctx.user._tfa) throw new TFAOperationError('enabled');
+        if (!verifyToken(arg.secret, arg.code)) throw new InvalidTokenError('2FA');
         await user.setById(ctx.user._id, { tfa: arg.secret });
         // TODO: return backup codes
         return true;
@@ -66,8 +66,8 @@ registerResolver(
 registerResolver(
     'TFAContext', 'disable(code: String!)', 'Boolean!',
     async (arg, ctx) => {
-        if (!ctx.user._tfa) throw new Error('2FA is already disabled');
-        if (!verifyToken(ctx.user._tfa, arg.code)) throw new Error('Invalid 2FA code');
+        if (!ctx.user._tfa) throw new TFAOperationError('disabled');
+        if (!verifyToken(ctx.user._tfa, arg.code)) throw new InvalidTokenError('2FA');
         await user.setById(ctx.user._id, undefined, { tfa: '' });
         return true;
     },
@@ -108,7 +108,7 @@ class UserLoginHandler extends Handler {
     noCheckPermView = true;
 
     async get() {
-        if (!system.get('server.login')) throw new LoginError('Builtin login disabled.');
+        if (!system.get('server.login')) throw new BuiltinLoginError();
         this.response.template = 'user_login.html';
     }
 
@@ -118,7 +118,7 @@ class UserLoginHandler extends Handler {
     @param('redirect', Types.String, true)
     @param('tfa', Types.String, true)
     async post(domainId: string, uname: string, password: string, rememberme = false, redirect = '', tfa = '') {
-        if (!system.get('server.login')) throw new LoginError('Builtin login disabled.');
+        if (!system.get('server.login')) throw new BuiltinLoginError();
         let udoc = await user.getByEmail(domainId, uname);
         if (!udoc) udoc = await user.getByUname(domainId, uname);
         if (!udoc) {
@@ -131,7 +131,7 @@ class UserLoginHandler extends Handler {
             this.limitRate(`user_login_${uname}`, 60, 5, false),
             oplog.log(this, 'user.login', { redirect }),
         ]);
-        if (udoc._tfa && !verifyToken(udoc._tfa, tfa)) throw new InvalidTokenError('2FA token invalid.');
+        if (udoc._tfa && !verifyToken(udoc._tfa, tfa)) throw new InvalidTokenError('2FA');
         udoc.checkPassword(password);
         await user.setById(udoc._id, { loginat: new Date(), loginip: this.request.ip });
         if (!udoc.hasPriv(PRIV.PRIV_USER_PROFILE)) throw new BlacklistedError(uname);
@@ -162,7 +162,7 @@ class UserSudoHandler extends Handler {
             oplog.log(this, 'user.sudo', {}),
         ]);
         if (tfa) {
-            if (!this.user._tfa || !verifyToken(this.user._tfa, tfa)) throw new InvalidTokenError('2FA token invalid.');
+            if (!this.user._tfa || !verifyToken(this.user._tfa, tfa)) throw new InvalidTokenError('2FA');
         } else {
             this.user.checkPassword(password);
         }
@@ -247,7 +247,7 @@ class UserRegisterWithCodeHandler extends Handler {
     async get(domainId: string, code: string) {
         this.response.template = 'user_register_with_code.html';
         const tdoc = await token.get(code, token.TYPE_REGISTRATION);
-        if (!tdoc) throw new InvalidTokenError(token.TYPE_REGISTRATION, code);
+        if (!tdoc) throw new InvalidTokenError(token.TYPE_TEXTS[token.TYPE_REGISTRATION], code);
         this.response.body = tdoc;
     }
 
@@ -271,7 +271,7 @@ class UserRegisterWithCodeHandler extends Handler {
         stuclass: string,
     ) {
         const tdoc = await token.get(code, token.TYPE_REGISTRATION);
-        if (!tdoc || (!tdoc.mail && !tdoc.phone)) throw new InvalidTokenError(token.TYPE_REGISTRATION, code);
+        if (!tdoc || (!tdoc.mail && !tdoc.phone)) throw new InvalidTokenError(token.TYPE_TEXTS[token.TYPE_REGISTRATION], code);
         if (password !== verify) throw new VerifyPasswordError();
         if (await student.getStuInfoByStuId(stuid)) throw new UserAlreadyExistError(stuid);
         if (tdoc.phone) tdoc.mail = `${tdoc.phone}@hydro.local`;
@@ -325,7 +325,7 @@ class UserLostPassWithCodeHandler extends Handler {
 
     async get({ domainId, code }) {
         const tdoc = await token.get(code, token.TYPE_LOSTPASS);
-        if (!tdoc) throw new InvalidTokenError(token.TYPE_LOSTPASS, code);
+        if (!tdoc) throw new InvalidTokenError(token.TYPE_TEXTS[token.TYPE_LOSTPASS], code);
         const udoc = await user.getById(domainId, tdoc.uid);
         this.response.body = { uname: udoc.uname };
         this.response.template = 'user_lostpass_with_code.html';
@@ -336,7 +336,7 @@ class UserLostPassWithCodeHandler extends Handler {
     @param('verifyPassword', Types.String)
     async post(domainId: string, code: string, password: string, verifyPassword: string) {
         const tdoc = await token.get(code, token.TYPE_LOSTPASS);
-        if (!tdoc) throw new InvalidTokenError(token.TYPE_LOSTPASS, code);
+        if (!tdoc) throw new InvalidTokenError(token.TYPE_TEXTS[token.TYPE_LOSTPASS], code);
         if (password !== verifyPassword) throw new VerifyPasswordError();
         await user.setPassword(tdoc.uid, password);
         await token.del(code, token.TYPE_LOSTPASS);
