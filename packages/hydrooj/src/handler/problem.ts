@@ -2,7 +2,7 @@ import AdmZip from 'adm-zip';
 import { readFile, statSync } from 'fs-extra';
 import { isBinaryFile } from 'isbinaryfile';
 import {
-    escapeRegExp, flattenDeep, intersection, isSafeInteger, pick,
+    escapeRegExp, flattenDeep, intersection, isSafeInteger, pick, uniqBy,
 } from 'lodash';
 import { FilterQuery, ObjectID } from 'mongodb';
 import { nanoid } from 'nanoid';
@@ -992,18 +992,18 @@ export class ProblemCreateHandler extends Handler {
 export class ProblemPrefixListHandler extends Handler {
     @param('prefix', Types.Name)
     async get(domainId: string, prefix: string) {
-        const pdocs = await problem.getPrefixList(domainId, prefix);
-        if (!Number.isNaN(+prefix) && !pdocs.filter((i) => i.docId === +prefix)) {
-            const pdoc = await problem.get(domainId, +prefix, ['domainId', 'docId', 'pid', 'title']);
-            if (pdoc) pdocs.unshift(pdoc);
-        }
+        const [pdocs, pdoc] = await Promise.all([
+            problem.getPrefixList(domainId, prefix),
+            problem.get(domainId, Number.isSafeInteger(+prefix) ? +prefix : prefix, ['domainId', 'docId', 'pid', 'title']),
+        ]);
+        if (pdoc) pdocs.unshift(pdoc);
         if (pdocs.length < 20) {
             const search = global.Hydro.lib.problemSearch || defaultSearch;
             const result = await search(domainId, prefix, { limit: 20 - pdocs.length });
             const docs = await problem.getMulti(domainId, { docId: { $in: result.hits.map((i) => +i.split('/')[1]) } }).toArray();
             pdocs.push(...docs);
         }
-        this.response.body = pdocs;
+        this.response.body = uniqBy(pdocs, 'docId');
     }
 }
 
