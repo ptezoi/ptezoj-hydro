@@ -115,6 +115,17 @@ export type ownerInfo = { owner: number, maintainer?: number[] };
 export type User = import('./model/user').User;
 export type Udict = NumericDictionary<User>;
 
+export interface BaseUser {
+    _id: number;
+    uname: string;
+    mail: string;
+    avatar: string;
+    school?: string;
+    displayName?: string;
+    studentId?: string;
+}
+export type BaseUserDict = Record<number, BaseUser>;
+
 export interface FileInfo {
     /** storage path */
     _id: string,
