@@ -677,7 +677,8 @@ export interface Model {
 }
 
 export interface HydroService {
-    bus: typeof import('./service/bus'),
+    /** @deprecated */
+    bus: Context,
     db: typeof import('./service/db').default,
     server: typeof import('./service/server'),
     storage: typeof import('./service/storage').default,
@@ -712,6 +713,7 @@ export interface Lib extends Record<string, any> {
     useragent: typeof import('./lib/useragent');
     validator: typeof import('./lib/validator');
     template?: any;
+    problemSearch: ProblemSearch;
 }
 
 export type UIInjectableFields = 'ProblemAdd' | 'Notification' | 'Nav' | 'UserDropdown' | 'DomainManage' | 'ControlPanel';
