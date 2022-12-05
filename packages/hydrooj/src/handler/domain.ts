@@ -136,6 +136,7 @@ class DomainDashboardHandler extends ManageHandler {
 }
 
 class DomainUserHandler extends ManageHandler {
+    @requireSudo
     async get({ domainId }) {
         const rudocs = {};
         const [dudocs, roles] = await Promise.all([
@@ -161,6 +162,7 @@ class DomainUserHandler extends ManageHandler {
         };
     }
 
+    @requireSudo
     @post('uid', Types.Int)
     @post('role', Types.Name)
     async postSetUser(domainId: string, uid: number, role: string) {
@@ -171,6 +173,7 @@ class DomainUserHandler extends ManageHandler {
         this.back();
     }
 
+    @requireSudo
     @param('uid', Types.NumericArray)
     @param('role', Types.Name)
     async postSetUsers(domainId: string, uid: number[], role: string) {
@@ -183,6 +186,7 @@ class DomainUserHandler extends ManageHandler {
 }
 
 class DomainPermissionHandler extends ManageHandler {
+    @requireSudo
     async get({ domainId }) {
         const roles = await domain.getRoles(domainId);
         this.response.template = 'domain_permission.html';
@@ -191,6 +195,7 @@ class DomainPermissionHandler extends ManageHandler {
         };
     }
 
+    @requireSudo
     async post({ domainId }) {
         const roles = {};
         delete this.request.body.csrfToken;
@@ -207,6 +212,7 @@ class DomainPermissionHandler extends ManageHandler {
 }
 
 class DomainRoleHandler extends ManageHandler {
+    @requireSudo
     async get({ domainId }) {
         const roles = await domain.getRoles(domainId, true);
         this.response.template = 'domain_role.html';
@@ -223,6 +229,7 @@ class DomainRoleHandler extends ManageHandler {
         this.back();
     }
 
+    @requireSudo
     @param('roles', Types.Array)
     async postDelete(domainId: string, roles: string[]) {
         if (Set.intersection(roles, ['root', 'default', 'guest']).size > 0) {
@@ -248,6 +255,7 @@ class DomainJoinApplicationsHandler extends ManageHandler {
         this.response.template = 'domain_join_applications.html';
     }
 
+    @requireSudo
     @post('method', Types.Range([domain.JOIN_METHOD_NONE, domain.JOIN_METHOD_ALL, domain.JOIN_METHOD_CODE]))
     @post('role', Types.Name, true)
     @post('expire', Types.Int, true)
