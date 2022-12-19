@@ -1,0 +1,31 @@
+{% import "components/user.html" as user %}
+{% extends "manage_base.html" %}
+{% block manage_content %}
+<div class="section">
+  <div class="section__header">
+    <h1 class="section__title" data-heading>学生导入</h1>
+  </div>
+  <div class="section__body">
+    <p>注册格式：    邮箱,用户名(建议使用学校首字母+姓名),密码,真实姓名(显示名称),学校,学号     </p>
+    <p>输入学生信息， 格式例如： abc@abc.com,ptez庄瑜,123456,庄瑜,莆田第二中学,3  </p>
+    <p>信息用英文逗号隔开，如果想要导入多个学生的话，每个学生占一行</p>
+    <p>提交时先点击预览，如果无错误的话会提示  xxx students found. 其中的xxx代表你所导入的学生数量</p>
+    <p>如果数量为0，且前面出现 Line xxx: Invalid xxxxx  则代表在第x行，xxxxx的信息无效，若出现 xxx already exists.则xxx信息已经存在</p>
+    <p>最后人数确认无误后点击递交</p>
+  </div>
+</div>
+<div class="section">
+  <div class="section__body">
+    {{ noscript_note.render() }}
+    <p name="messages"></p>
+    {{ form.form_textarea({
+        columns:null,
+        name:'students'
+        }) }}
+    <div class="row"><div class="column">
+      <button name="preview" class="rounded primary button">{{ _('Preview') }}</button>
+      <button name="submit" class="rounded button">{{ _('Submit') }}</button>
+    </div></div>
+  </div>
+</div>
+{% endblock %}
