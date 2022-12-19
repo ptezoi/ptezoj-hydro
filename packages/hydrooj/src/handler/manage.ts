@@ -4,7 +4,7 @@ import * as yaml from 'js-yaml';
 import Schema from 'schemastery';
 import * as check from '../check';
 import {
-    CannotEditSuperAdminError, NotLaunchedByPM2Error, UserNotFoundError, ValidationError,
+    BadRequestError, CannotEditSuperAdminError, NotLaunchedByPM2Error, UserNotFoundError, ValidationError,
 } from '../error';
 import { isEmail, isPassword } from '../lib/validator';
 import { Logger } from '../logger';
@@ -12,6 +12,7 @@ import { PRIV, STATUS } from '../model/builtin';
 import domain from '../model/domain';
 import record from '../model/record';
 import * as setting from '../model/setting';
+import StudentModel from '../model/stuinfo';
 import * as system from '../model/system';
 import user from '../model/user';
 import * as bus from '../service/bus';
@@ -317,6 +318,90 @@ class SystemUserPrivHandler extends SystemHandler {
     }
 }
 
+class SystemStudentImportHandler extends SystemHandler {
+    async get() {
+        this.response.body.users = [];
+        this.response.template = 'manage_stu_import.html';
+    }
+
+    @param('students', Types.Content)
+    @param('draft', Types.Boolean)
+    async post(domainId: string, students: string, draft: boolean) {
+        const users = students.split('\n');
+        const udocs = [];
+        const messages = [];
+        for (const i in users) {
+            const u = users[i];
+            if (!u.trim()) continue;
+            let [email, username, password, realname, classname, stuid] = u.split(',').map((t) => t.trim());
+            if (!email || !username || !password) [email, username, password, realname, classname, stuid] = u.split('\t').map((t) => t.trim());
+            if (email && username && password) {
+                if (!isEmail(email)) messages.push(`Line ${+i + 1}: Invalid email.`);
+                else if (!Types.Username[1](username)) messages.push(`Line ${+i + 1}: Invalid username`);
+                else if (!isPassword(password)) messages.push(`Line ${+i + 1}: Invalid password`);
+                else if (!/^[0-9]*$/.test(stuid)) messages.push(`Line ${+i + 1}: Invalid stuid`);
+                // eslint-disable-next-line no-await-in-loop
+                else if (await user.getByEmail('system', email)) {
+                    messages.push(`Line ${+i + 1}: Email ${email} already exists.`);
+                    // eslint-disable-next-line no-await-in-loop
+                } else if (await StudentModel.getStuInfoByStuId(stuid)) {
+                    messages.push(`Line ${+i + 1}: stuid ${stuid} already been registered.`);
+                // eslint-disable-next-line no-await-in-loop
+                } else if (await user.getByUname('system', username)) {
+                    messages.push(`Line ${+i + 1}: Username ${username} already exists.`);
+                } else {
+                    udocs.push({
+                        email, username, password, realname, classname, stuid,
+                    });
+                }
+            } else messages.push(`Line ${+i + 1}: Input invalid.`);
+        }
+        messages.push(`${udocs.length} students found.`);
+        if (!draft) {
+            for (const {
+                email, username, password, realname, classname, stuid,
+            } of udocs) {
+                try {
+                    // eslint-disable-next-line no-await-in-loop
+                    const uid = await user.create(email, username, password);
+                    // eslint-disable-next-line no-await-in-loop
+                    await StudentModel.create(uid, classname, realname, stuid);
+                } catch (e) {
+                    messages.push(e.message);
+                }
+            }
+        }
+        this.response.body.users = udocs;
+        this.response.body.messages = messages;
+    }
+}
+
+class SystemChangeUserPasswordHandler extends SystemHandler {
+    async get() {
+        this.response.template = 'manage_user_changepassword.html';
+    }
+
+    @param('password', Types.String, isPassword)
+    @param('confirmPassword', Types.String, isPassword)
+    @param('userID', Types.Int, true)
+    @param('email', Types.String, true, isEmail)
+    @param('username', Types.String, true, Types.Username)
+    @param('stuid', Types.String, true)
+    async post(domainId: string, password:string, confirmPassword:string, userID?:number, email?:string, username?:string, stuid?:string) {
+        let udoc = null;
+        if (password !== confirmPassword) throw new BadRequestError('密码不一致！');
+        if (userID) udoc = await user.getById('system', userID);
+        else if (email) udoc = await user.getByEmail('system', email);
+        else if (username) udoc = await user.getByUname('system', username);
+        else if (stuid) udoc = await user.getById('system', (await StudentModel.getStuInfoByStuId(stuid))._id);
+        else throw new BadRequestError('请填写用户信息！');
+        if (!udoc) throw new BadRequestError('用户不存在！');
+        await user.setPassword(udoc._id, password);
+        throw new BadRequestError('修改用户密码成功');
+        this.back();
+    }
+}
+
 export async function apply(ctx) {
     ctx.Route('manage', '/manage', SystemMainHandler);
     ctx.Route('manage_dashboard', '/manage/dashboard', SystemDashboardHandler);
@@ -325,5 +410,7 @@ export async function apply(ctx) {
     ctx.Route('manage_config', '/manage/config', SystemConfigHandler);
     ctx.Route('manage_user_import', '/manage/userimport', SystemUserImportHandler);
     ctx.Route('manage_user_priv', '/manage/userpriv', SystemUserPrivHandler);
+    ctx.Route('manage_student_import', '/manage/studentimport', SystemStudentImportHandler);
+    ctx.Route('manage_user_changepassword', '/manage/change-password', SystemChangeUserPasswordHandler);
     ctx.Connection('manage_check', '/manage/check-conn', SystemCheckConnHandler);
 }
