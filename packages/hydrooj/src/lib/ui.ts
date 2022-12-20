@@ -55,9 +55,6 @@ inject('Nav', 'courses', { prefix: 'courses' }, PRIV.PRIV_USER_PROFILE);
 inject('Nav', 'training_main', { prefix: 'training' }, PERM.PERM_VIEW_TRAINING);
 inject('Nav', 'record_main', {
     prefix: 'record',
-    query: (handler) => (handler.user.hasPriv(PRIV.PRIV_USER_PROFILE)
-        ? ({ uidOrName: handler.user._id })
-        : ({})),
 });
 inject('Nav', 'ranking', { prefix: 'ranking' }, PERM.PERM_VIEW_RANKING);
 inject('Nav', 'discussion_main', { prefix: 'discussion' }, PERM.PERM_VIEW_DISCUSSION);
