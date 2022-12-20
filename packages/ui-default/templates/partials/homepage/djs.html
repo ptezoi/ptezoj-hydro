@@ -1,0 +1,38 @@
+<script>
+    window.onload = function() {
+        setInterval(function() {
+            var nowTime = new Date();
+            var endTime1 = new Date("2023-01-08 08:30:00");
+			var endTime2 = new Date("2023-09-18 00:00:00");
+			var endTime3 = new Date("2023-10-29 00:00:00");
+			var endTime4 = new Date("2023-11-26 00:00:00");
+            var endTime5 = new Date("2023-01-01 00:00:00");
+            var endTime6 = new Date("2023-01-01 00:00:00");
+            var seconds1 = parseInt((endTime1.getTime() - nowTime.getTime()) / 1000);
+			var seconds2 = parseInt((endTime2.getTime() - nowTime.getTime()) / 1000);
+			var seconds3 = parseInt((endTime3.getTime() - nowTime.getTime()) / 1000);
+			var seconds4 = parseInt((endTime4.getTime() - nowTime.getTime()) / 1000);
+            var seconds5 = parseInt((endTime5.getTime() - nowTime.getTime()) / 1000);
+            var seconds6 = parseInt((endTime6.getTime() - nowTime.getTime()) / 1000);
+            var d1 = parseInt(seconds1 / 3600 / 24);
+			var d2 = parseInt(seconds2 / 3600 / 24);
+			var d3 = parseInt(seconds3 / 3600 / 24);
+			var d4 = parseInt(seconds4 / 3600 / 24);
+            var d5 = parseInt(seconds5 / 3600 / 24);
+            var d6 = parseInt(seconds6 / 3600 / 24);
+            document.getElementById("djs").innerHTML =  
+            "<b>" + "距离 2023年1月福建省普通高中学业水平合格性考试" + "</b> "+ "<br>" + "还有 " + d1 + " 天 " + "<br>" + "<br>"
+            + "<b>" + "距离 CSP - J/S 2023 第一轮认证 " + "</b>" + "<br>" + "还有 " + d2 + " 天 " + "<br>" + "<br>"
+			+ "<b>" + "距离 CSP - J/S 2023 第二轮认证 " + "</b>" + "<br>" + "还有 " + d3 + " 天 " + "<br>" + "<br>"
+            + "<b>" + "距离 NOIP 2023" + "</b>" +"<br>" + "<b>" + "(全国青少年信息学奥林匹克联赛) " + "</b>" + "<br>" + "还有 " + d4 +" 天 "
+        }, 1000);
+    }
+</script>
+<div class="section side">
+    <div class="section__header">
+      <h1 class="section__title">倒计时</h1>
+    </div>
+  <div class="section__body typo" name="broadcast">
+    <p id="djs"></p>
+  </div>
+</div>
