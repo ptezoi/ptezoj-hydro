@@ -94,6 +94,7 @@ class SystemDashboardHandler extends SystemHandler {
 }
 
 class SystemScriptHandler extends SystemHandler {
+    @requireSudo
     async get() {
         this.response.template = 'manage_script.html';
         this.response.body.scripts = global.Hydro.script;
@@ -212,6 +213,7 @@ class SystemConfigHandler extends SystemHandler {
 
 /* eslint-disable no-await-in-loop */
 class SystemUserImportHandler extends SystemHandler {
+    @requireSudo
     async get() {
         this.response.body.users = [];
         this.response.template = 'manage_user_import.html';
@@ -319,6 +321,7 @@ class SystemUserPrivHandler extends SystemHandler {
 }
 
 class SystemStudentImportHandler extends SystemHandler {
+    @requireSudo
     async get() {
         this.response.body.users = [];
         this.response.template = 'manage_stu_import.html';
@@ -377,6 +380,7 @@ class SystemStudentImportHandler extends SystemHandler {
 }
 
 class SystemChangeUserPasswordHandler extends SystemHandler {
+    @requireSudo
     async get() {
         this.response.template = 'manage_user_changepassword.html';
     }
