@@ -6,11 +6,11 @@
   {% endif %}
   {% if classname %}
     {% if udoc.class %}
-      <a href="{{ url('student_class', cls=udoc.class) }}" data-tooltip="专业班级：{{ udoc.class }}">
+      <a href="{{ url('student_class', cls=udoc.class) }}" data-tooltip="学校：{{ udoc.class }}">
         <span class="text-badge">{{ udoc.class }}</span>
       </a>
     {% else %}
-      <span class="text-badge" data-tooltip="该用户未填写班级信息">未完善</span>
+      <span class="text-badge" data-tooltip="该用户未填写学校信息">未完善</span>
     {% endif %}
   {% endif %}
   {% if udoc.name %}

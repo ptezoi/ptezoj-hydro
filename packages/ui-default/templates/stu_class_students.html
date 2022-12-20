@@ -4,10 +4,10 @@
         <div class="medium-12 columns">
             <div class="section">
                 <div class="section__header">
-                    <h1 class="section__title">班级：{{ className }}</h1>
+                    <h1 class="section__title">学校：{{ className }}</h1>
                 </div>
                 <div class="section__body">
-                    该班级下有{{ udocs.length }}个用户
+                    该学校下有{{ udocs.length }}个用户
                 </div>
             </div>
         </div>
@@ -18,7 +18,7 @@
                 <div class="section__body no-padding">
                     <div>
                         {% if not udocs.length %}
-                            {{ nothing.render('该班级还没有人加入哦！') }}
+                            {{ nothing.render('该学校还没有人加入哦！') }}
                         {% else %}
                             <table class="data-table">
                                 <colgroup>
