@@ -1,0 +1,48 @@
+<link rel="stylesheet" href="https://cdn.ptezoj.com/swiper/swiper-bundle.min.css">
+<style>
+    .swiper {
+        height: 450px;
+    }  
+</style>
+<div class="section visible">
+    <div class="section__body">
+        <div class="swiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <img src="https://cdn.ptezoj.com/file/3/ptoi2023p1.png" style="width: 100%;" />
+                </div>
+                <div class="swiper-slide">
+                    <img src="https://cdn.ptezoj.com/file/3/ptoi2023p2.png" style="width: 100%;" />
+                </div>
+            </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.ptezoj.com/swiper/swiper-bundle.min.js"></script>
+<script>        
+  var mySwiper = new Swiper ('.swiper', {
+    loop: true, // 循环模式选项
+
+    autoplay: {
+        delay: 3000,
+        stopOnLastSlide: false,
+        disableOnInteraction: true,
+    },
+
+    pagination: {
+      el: '.swiper-pagination',
+    },
+    
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
+    
+    scrollbar: {
+      el: '.swiper-scrollbar',
+    },
+  })        
+</script>
