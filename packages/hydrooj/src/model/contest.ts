@@ -94,7 +94,6 @@ const acm = buildContestRule({
             { type: 'stu_class', value: _('Stu_Class') },
             { type: 'user', value: _('User') },
         ];
-        if (isExport) columns.push({ type: 'email', value: _('Email') });
         columns.push({ type: 'solved', value: `${_('Solved')}\n${_('Total Time')}` });
         for (let i = 1; i <= tdoc.pids.length; i++) {
             const pid = tdoc.pids[i - 1];
@@ -130,7 +129,6 @@ const acm = buildContestRule({
             },
             { type: 'user', value: udoc.uname, raw: tsdoc.uid },
         ];
-        if (isExport) row.push({ type: 'email', value: udoc.mail });
         row.push({
             type: 'time',
             value: `${tsdoc.accept || 0}\n${formatSeconds(tsdoc.time || 0.0, false)}`,
@@ -231,7 +229,6 @@ const oi = buildContestRule({
             { type: 'stu_class', value: _('Stu_Class') },
             { type: 'user', value: _('User') },
         ];
-        if (isExport) columns.push({ type: 'email', value: _('Email') });
         columns.push({ type: 'total_score', value: _('Total Score') });
         for (let i = 1; i <= tdoc.pids.length; i++) {
             const pid = tdoc.pids[i - 1];
@@ -261,7 +258,6 @@ const oi = buildContestRule({
             },
             { type: 'user', value: udoc.uname, raw: tsdoc.uid },
         ];
-        if (isExport) row.push({ type: 'email', value: udoc.mail });
         row.push({ type: 'total_score', value: tsdoc.score || 0 });
         for (const s of tsdoc.journal || []) {
             if (!pdict[s.pid]) continue;
@@ -280,9 +276,6 @@ const oi = buildContestRule({
                     raw: [{
                         value: tsddict[pid]?.score ?? '-',
                         raw: tsddict[pid]?.rid || null,
-                    }, {
-                        value: meta?.psdict?.[index]?.score ?? '-',
-                        raw: meta?.psdict?.[index]?.rid ?? null,
                     }],
                 } : {
                     type: 'record',
