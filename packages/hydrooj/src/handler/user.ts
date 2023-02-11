@@ -128,7 +128,7 @@ class UserLoginHandler extends Handler {
         }
         if (!udoc) throw new UserNotFoundError(uname);
         await Promise.all([
-            this.limitRate('user_login', 60, 30, false),
+            this.limitRate('user_login', 60, 360, false),
             this.limitRate(`user_login_${uname}`, 60, 5, false),
             oplog.log(this, 'user.login', { redirect }),
         ]);
